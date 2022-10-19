@@ -21,7 +21,7 @@ export default async function config(args) {
           include: null,
         },
       }),
-      css({ output: "datatable.css" }),
+      css({ output: "lib/datatable.css" }),
       clear({
         targets: ['./dist'],
       })

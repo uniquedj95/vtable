@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript2';
 import vue from 'rollup-plugin-vue';
 import clear from 'rollup-plugin-clear';
-import cssbundle from 'rollup-plugin-css-bundle'
+import css from 'rollup-plugin-css-only';
 
 export default async function config(args) {
   return {
@@ -21,7 +21,7 @@ export default async function config(args) {
           include: null,
         },
       }),
-      cssbundle(),
+      css({ output: "datatable.css" }),
       clear({
         targets: ['./dist'],
       })

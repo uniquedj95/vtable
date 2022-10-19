@@ -7,8 +7,8 @@ import orderBy from "lodash/orderBy";
 import range from "lodash/range";
 import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText } from "@ionic/vue";
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
-import DateRangePicker from "../inputs/DateRangePicker.vue";
 import { SelectInput } from "./select";
+import { DateRangePicker } from "./date-picker";
 
 export const DataTable = defineComponent({
   name: "DataTable",

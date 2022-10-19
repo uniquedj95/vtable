@@ -243,7 +243,7 @@ export const DataTable = defineComponent({
               ),
               ...props.customFilters.map(filter => {
                 if (filter.type === 'dateRange') {
-                  return h(IonCol, { size: filter.gridSize || 6 },
+                  return h(IonCol, { size: `${filter.gridSize}` || '6' },
                     h(DateRangePicker, {
                       range: (computed(() => filter.value || { startDate: "", endDate: "" })).value,
                       onRangeChange: async (newRange: any) => {
@@ -252,7 +252,7 @@ export const DataTable = defineComponent({
                     })
                   )
                 } else if (filter.type === 'select') {
-                  return h(IonCol, { size: filter.gridSize || 3 }, 
+                  return h(IonCol, { size: `${filter.gridSize}` || '3' }, 
                     h(SelectInput, { 
                       options: filter.options, 
                       placeholder: filter.label || filter.placeholder || 'Select Item',
@@ -261,7 +261,7 @@ export const DataTable = defineComponent({
                     })
                   )
                 } else {
-                  return h(IonCol, { size: 4 },
+                  return h(IonCol, { size: '4' },
                     h(IonInput, {
                       class: 'box',
                       type: filter.type,
@@ -274,7 +274,7 @@ export const DataTable = defineComponent({
                   )
                 }
               }),
-              props.customFilters.length > 0 && props.config.showSubmitButton !== false && h(IonCol, { size: 2, class: "ion-margin-bottom" },
+              props.customFilters.length > 0 && props.config.showSubmitButton !== false && h(IonCol, { size: '2', class: "ion-margin-bottom" },
                 h(IonButton, { color: "primary", onClick: emitCustomFilters }, 'Submit')
               )
             ])
@@ -362,37 +362,37 @@ export const DataTable = defineComponent({
       ),
       h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
         h(IonRow, [
-          h(IonCol, { size: 4 }, [
+          h(IonCol, { size: '4' }, [
             h(IonButton, {
               color: "light",
-              size: 'medium',
+              size: 'small',
               disabled: filters.pagination.page === filters.pagination.start,
               onClick: () => filters.pagination.page--
             }, h(
               IonIcon, { icon: caretBack }
             )),
-            filters.pagination.start > 3 && h(IonButton, { size: 'medium', color: "light", onClick: () => filters.pagination.page = 1 }, 1),
-            filters.pagination.start > 3 && h(IonButton, { size: 'medium', color: "light", disabled: true }, '...'),
+            filters.pagination.start > 3 && h(IonButton, { size: 'small', color: "light", onClick: () => filters.pagination.page = 1 }, 1),
+            filters.pagination.start > 3 && h(IonButton, { size: 'small', color: "light", disabled: true }, '...'),
             paginationPages.value.map(page => h(
               IonButton, {
-              size: 'medium',
+              size: 'small',
               color: filters.pagination.page === page ? 'primary' : 'light',
               onClick: () => filters.pagination.page = page
             },
               page
             )),
-            filters.pagination.end < (filters.pagination.totalPages - 2) && h(IonButton, { size: 'medium', color: "light", disabled: true }, '...'),
-            filters.pagination.end < (filters.pagination.totalPages - 2) && h(IonButton, { size: 'medium', color: "light", onClick: () => filters.pagination.page = filters.pagination.totalPages }, filters.pagination.totalPages),
+            filters.pagination.end < (filters.pagination.totalPages - 2) && h(IonButton, { size: 'small', color: "light", disabled: true }, '...'),
+            filters.pagination.end < (filters.pagination.totalPages - 2) && h(IonButton, { size: 'small', color: "light", onClick: () => filters.pagination.page = filters.pagination.totalPages }, filters.pagination.totalPages),
             h(IonButton, {
               color: "light",
-              size: 'medium',
+              size: 'small',
               disabled: filters.pagination.page === filters.pagination.end || isEmpty(filteredRows.value),
               onClick: () => filters.pagination.page++
             }, h(
               IonIcon, { icon: caretForward }
             )),
           ]),
-          h(IonCol, { size: 4, style: { textAlign: 'center' } }, [
+          h(IonCol, { size: '4', style: { textAlign: 'center' } }, [
             h(IonItem, { class: "box", lines: "none", style: { display: 'inline-block', '--min-height': '11px', width: '190px', marginLeft: '.5rem' } }, [
               h(IonLabel, { class: 'ion-margin-end' }, "Go to page"),
               h(IonInput, {
@@ -426,7 +426,7 @@ export const DataTable = defineComponent({
               ]),
             ]),
           ]),
-          h(IonCol, { size: 4, style: { marginTop: '1rem', textAlign: 'right', fontWeight: 500 } }, totalFilteredRows.value
+          h(IonCol, { size: '4', style: { marginTop: '1rem', textAlign: 'right', fontWeight: 500 } }, totalFilteredRows.value
             ? `Showing ${(computed(() => (filters.pagination.page === 1) ? 1 : (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1)
             )).value
             } to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages)

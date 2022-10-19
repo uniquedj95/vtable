@@ -1,7 +1,5 @@
-import dayjs from 'dayjs';
 import { TableColumnInterface } from './types';
-import { get, isEmpty } from 'lodash';
-import { Service } from '@/services/service';
+import { get } from 'lodash';
 
 function sanitize(str: string) {
   try {
@@ -32,29 +30,17 @@ export function convertToCsv(columns: TableColumnInterface[], rows: any[], perio
     .join(",")
   ).join("\n");
 
-  str += "\n" + `Date Created:  ${dayjs().format("YYYY-MM-DD:h:m:s")}`;
-  if (!isEmpty(period)) {
-    str += "\n" + `Quarter: ${period.startDate} to ${period.endDate}`;
-  }
-  str += "\n" + `e-Mastercard Version : ${Service.getAppVersion()}`;
-  str += "\n" + `API Version ${Service.getApiVersion()}`;
-  str += "\n" + `Site UUID: ${Service.getSiteUUID()}`;
+  str += "\n" + `Date Created:  ${new Date()}`;
 
   return str;
 }
 
 export function exportToCSV(csvContent: string, filename: string) {
   const csvData = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  //IE11 & Edge
-  if (navigator.msSaveBlob) {
-    navigator.msSaveBlob(csvData, filename);
-  } else {
-    //In FF link must be added to DOM to be clicked
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(csvData);
-    link.setAttribute("download", `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  const link = document.createElement("a");
+  link.href = window.URL.createObjectURL(csvData);
+  link.setAttribute("download", `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

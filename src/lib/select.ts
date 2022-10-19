@@ -44,16 +44,6 @@ export const SelectInput = defineComponent({
       required: false
     }
   },
-  components: {
-    IonLabel,
-    IonInput,
-    IonNote,
-    IonIcon,
-    IonCheckbox,
-    IonList,
-    IonChip,
-    IonItem
-  },
   emits: ["select"],
   setup(props, { emit}) {
     const selectedOption = ref<Option>();
@@ -196,7 +186,7 @@ export const SelectInput = defineComponent({
           canShowOptions.value && h("div", { class: "input-options" }, 
             h(IonList, filteredOptions.value.map((option, i) => 
               h(IonItem, { 
-                lines: i + 1 === filteredOptions.value.length ? 'none' : '',
+                lines: i + 1 === filteredOptions.value.length ? 'none' : undefined,
                 onClick: () => selectOption(option)
               }, 
               [

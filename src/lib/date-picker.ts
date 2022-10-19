@@ -41,7 +41,7 @@ export const DateRangePicker =  defineComponent({
             h(IonIcon, { icon: arrowForward, style: { fontSize: '24px', padding: '.5rem'}})
           ),
           h(IonCol, { size: "5"}, 
-            h(IonInput, { type: 'date', class: 'box-input', value: start.value, onIonInput: (e: Event) => end.value = (e.target as HTMLInputElement).value })
+            h(IonInput, { type: 'date', class: 'box-input', value: end.value, onIonInput: (e: Event) => end.value = (e.target as HTMLInputElement).value })
           ),
         ])
       );

@@ -82,7 +82,6 @@ export const DataTable = defineComponent({
     );
 
     const emitCustomFilters = () => {
-      console.log("Emit filters", customFiltersValues)
       if (props.customFilters.every(f => {
         if (f.required === false) return true
         if (typeof customFiltersValues[f.id] === 'object') {

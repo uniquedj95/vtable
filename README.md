@@ -2,7 +2,7 @@
 
 An advanced ionic vue 3 data table
 
-## GET Started
+## INSTALLATION
 
 Install the datatable by running the following commands
 

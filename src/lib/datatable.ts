@@ -12,6 +12,9 @@ import { DateRangePicker } from "./date-picker";
 
 export const DataTable = defineComponent({
   name: "DataTable",
+  created() {
+    console.log(this.$tableTheme)
+  },
   props: {
     rows: {
       type: Array as PropType<any[]>,

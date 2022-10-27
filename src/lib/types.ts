@@ -76,5 +76,5 @@ export interface TableConfigInterface {
 }
 
 export interface TableGlobalConfig {
-  defaultTheme: "primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"
+  color: "primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"
 }

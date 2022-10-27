@@ -48,6 +48,7 @@ export const DataTable = defineComponent({
   emits: ["customFilter", "queryChange", "drilldown"],
   setup(props, { emit }) {
     const isLoading = ref(false);
+    console.log("Global Theme", inject("tableTheme"))
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? props.columns.length : props.columns.length + 1);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);

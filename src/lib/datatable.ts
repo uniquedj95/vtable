@@ -1,5 +1,5 @@
 import { computed, defineComponent, h, inject, onMounted, PropType, reactive, ref, watch } from "vue";
-import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option } from "./types";
+import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TableGlobalConfig } from "./types";
 import './datatable.css'
 import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
@@ -47,8 +47,9 @@ export const DataTable = defineComponent({
   },
   emits: ["customFilter", "queryChange", "drilldown"],
   setup(props, { emit }) {
+    const globals = inject("globalTableOptions") as TableGlobalConfig;
+    console.log("Global Options", globals)
     const isLoading = ref(false);
-    console.log("Global Theme", inject("tableTheme"))
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? props.columns.length : props.columns.length + 1);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
@@ -294,7 +295,7 @@ export const DataTable = defineComponent({
       ),
       h("div", { class: "responsive-table ion-padding-horizontal" },
         h("table", { class: "table bordered-table striped-table" }, [
-          h("thead", { class: props.color || inject("tableTheme") || "" },
+          h("thead", { class: props.color || globals?.color || "" },
             h("tr", [
               ...props.columns.map(column =>
                 h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },

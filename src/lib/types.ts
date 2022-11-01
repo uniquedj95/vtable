@@ -9,7 +9,7 @@ export interface Option {
 
 export interface TableColumnInterface {
   label: string;
-  path: string;
+  path: string | ((row: any) => any);
   exportable?: boolean;
   initialSort?: boolean;
   sortable?: boolean;

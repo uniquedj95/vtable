@@ -1,5 +1,5 @@
-import { computed, defineComponent, h, inject, onMounted, PropType, reactive, ref, watch } from "vue";
-import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TableGlobalConfig } from "./types";
+import { computed, defineComponent, h, onMounted, PropType, reactive, ref, watch } from "vue";
+import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option } from "./types";
 import './datatable.css'
 import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
@@ -104,7 +104,10 @@ export const DataTable = defineComponent({
     )
 
     const filter = () => {
-      if (!filters.search) return filteredRows.value = tableRows.value;
+      if (!filters.search) {
+        filteredRows.value = tableRows.value;
+        return
+      }
       const filter = filters.search.toLowerCase();
       filteredRows.value = tableRows.value.filter(row => Object.values(row).some((value: any) =>
         value && JSON.stringify(value).toLowerCase().includes(filter)

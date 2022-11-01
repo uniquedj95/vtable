@@ -184,7 +184,10 @@ export const DataTable = defineComponent({
     }
 
     const updateSortQueries = (column: TableColumnInterface) => {
-      const queryIndex = filters.sort.findIndex((s) => s.column.path === column.path);
+      const queryIndex = filters.sort.findIndex((s) => {
+        if(typeof s.column.path === "function" && typeof column.path === 'function') return s.column.label === column.label
+        return s.column.path === column.path
+      });
       if (queryIndex >= 0) {
         filters.sort[queryIndex].order = filters.sort[queryIndex].order === 'asc'
           ? 'desc'
@@ -304,7 +307,10 @@ export const DataTable = defineComponent({
                     h("span", column.label),
                     column.sortable !== false && h(IonIcon, {
                       icon: (computed(() => {
-                        const query = filters.sort.find(s => s.column.path === column.path);
+                        const query = filters.sort.find(s => {
+                          if(typeof s.column.path === "function" && typeof column.path === 'function') return s.column.label === column.label
+                          return s.column.path === column.path
+                        });
                         return !query ? swapVertical : query.order == "asc" ? arrowUp : arrowDown;
                       })).value,
                       style: {

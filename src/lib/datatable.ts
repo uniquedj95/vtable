@@ -68,7 +68,7 @@ export const DataTable = defineComponent({
       }
     });
 
-    const showFilterSection = computed(() => {
+    const showFilterSection = computed<boolean>(() => {
       return props.config.showSearchField !== false ||
         props.customFilters.length > 0 ||
         props.actionsButtons.length > 0
@@ -120,9 +120,7 @@ export const DataTable = defineComponent({
       filteredRows.value = orderBy(
         filteredRows.value,
         filters.sort.map(({ column }) => (row) => {
-          let value = typeof column.path === 'function' 
-            ? column.path(row)
-            : get(row, column.path);
+          let value = typeof column.path === 'function'  ? column.path(row) : get(row, column.path);
           if(!value || isEmpty(value)) return ""
           if (typeof column.preSort === "function") value = column.preSort(value);
           if (typeof value === "number" || column.sortCaseSensitive) return value;

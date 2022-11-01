@@ -117,7 +117,9 @@ export const DataTable = defineComponent({
       filteredRows.value = orderBy(
         filteredRows.value,
         filters.sort.map(({ column }) => (row) => {
-          let value = get(row, column.path);
+          let value = typeof column.path === 'function' 
+            ? column.path(row)
+            : get(row, column.path);
           if(!value || isEmpty(value)) return ""
           if (typeof column.preSort === "function") value = column.preSort(value);
           if (typeof value === "number" || column.sortCaseSensitive) return value;
@@ -296,7 +298,7 @@ export const DataTable = defineComponent({
           h("thead", { class: props.color || "" },
             h("tr", [
               ...props.columns.map(column =>
-                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },
+                h("th", { key: column.label, style: { inlineSize: 'min-content', wordWrap: 'break-all' }, onClick: () => updateSortQueries(column) },
                   [
                     h("span", column.label),
                     column.sortable !== false && h(IonIcon, {
@@ -335,10 +337,12 @@ export const DataTable = defineComponent({
                     if (defualtActionBtn) await defualtActionBtn.action(row, index)
                   }
                 }, [
-                  ...props.columns.map(column => {
-                    let value = get(row, column.path);
+                  ...props.columns.map((column, index) => {
+                    let value = typeof column.path === 'function' 
+                      ? column.path(row)
+                      : get(row, column.path);
                     if (typeof column.formatter === 'function' && value) value = column.formatter(value)
-                    return h('td', { key: column.path, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' } },
+                    return h('td', { key: index, style: { inlineSize: 'min-content', wordWrap: 'break-all' } },
                       column.drillable && !isEmpty(value)
                         ? h('a', { onClick: () => emit("drilldown", { column, row }) }, Array.isArray(value) ? value.length : value)
                         : Array.isArray(value)

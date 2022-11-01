@@ -24,7 +24,10 @@ export function convertToCsv(columns: TableColumnInterface[], rows: any[], perio
   str += rows.map((row) => columns
     .filter(column => column.exportable !== false)
     .map(column => {
-      const value = get(row, column.path);
+      let value = typeof column.path === 'function' 
+        ? column.path(row)
+        : get(row, column.path);
+      if (typeof column.formatter === 'function' && value) value = column.formatter(value)
       return sanitize(column.drillable && Array.isArray(value) ? value.length : value);
     })
     .join(",")

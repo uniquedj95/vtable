@@ -7,11 +7,11 @@ An advanced Data table for Ionic Vue framework.
 ## Installation
 
 ```bash
-npm install @uniquedj95/vTable
+npm install @uniquedj95/vtable
 
 OR
 
-yarn add @uniquedj95/vTable
+yarn add @uniquedj95/vtable
 ```
 
 ## Usage
@@ -20,13 +20,19 @@ Register datatable globally
 
 ```typescript
 // src/main.ts
-import { TableGlobalConfig, VTable } from "@uniquedj95/vtable"
+import { VTable } from "@uniquedj95/vtable"
 
-const options: TableGlobalConfig = {
-  defaultTheme: "primary"
-}
+// import datatable css
+import '@uniquedj95/vtable/dist/lib/datatable.css'
 
-app.use(vTable, options)
+const app = createApp(App)
+  .use(IonicVue)
+  .use(VTable)
+  .use(router)
+
+router.isReady().then(() => {
+  app.mount('#app');
+});
 ```
 
 ```HTML
@@ -76,7 +82,9 @@ Note: that you need to manually import styles from `@uniquedj95/vtable/dist/lib/
 | color | undefined | color themes that is applied to the datatable. The following are accepted colors: `primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"` |
 | config | undefined | configuration that affects how the datatable functions |
 
-1.1 Table Column 
+
+1.1 Table Column
+
 A table column has the following proprties
 
 | Property Name | Required | Description |
@@ -93,6 +101,7 @@ A table column has the following proprties
 | formatter | No | A function that takes column values and return formated values that are displayed on the table |
 
 1.2 Action Button
+
 These are top buttons whose actions affects the whole table. An Action Button has the following properties
 
 | Property Name | Required | Type | Description |
@@ -103,6 +112,7 @@ These are top buttons whose actions affects the whole table. An Action Button ha
 | action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows and filters`
 
 1.3 Row Action Button
+
 These are buttons that are attached to each row for specific row actions. The button has the following properties
 
 | Property Name | Required | Type | Description |
@@ -115,6 +125,7 @@ These are buttons that are attached to each row for specific row actions. The bu
 | action | Yes | Function | A listener function to button clicks. It receives row data and its index |
 
 1.4 Custom Filter
+
 The are filters that are used when fetching data from the source/API. A custom filter has the following properties
 
 | Property Name | Required | Type | Description |
@@ -129,6 +140,7 @@ The are filters that are used when fetching data from the source/API. A custom f
 | required | No | Boolean | Specifies if the filter is required to be set before before emitting filter events |
 
 1.4.1 Filter Option
+
 A filter option is an object that has the following properties
 
 | Property Name | Required | Type | Description |
@@ -139,6 +151,7 @@ A filter option is an object that has the following properties
 | other | No | any | Any other data that needs to be passed as part of the option |
 
 1.5 Table Config
+
 These are general configuration that affects how the datatable functions. The config has the following properties
 
 | Property name | Required | type | Default | Description |

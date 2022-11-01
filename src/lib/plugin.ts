@@ -5,7 +5,6 @@ import { TableGlobalConfig } from './types';
 // The Install function used by Vue to register the plugin
 export const VTable: Plugin = {
   install(app: App, options?: TableGlobalConfig) {
-    console.log("Installing plugin with options", options)
     app.config.globalProperties.$globalTableOptions = options
     app.provide("globalTableOptions", options)
     app.component('DataTable', DataTable)

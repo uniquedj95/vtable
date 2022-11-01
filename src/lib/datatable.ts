@@ -47,8 +47,6 @@ export const DataTable = defineComponent({
   },
   emits: ["customFilter", "queryChange", "drilldown"],
   setup(props, { emit }) {
-    const globals = inject<TableGlobalConfig>("globalTableOptions");
-    console.log("Global Options", globals)
     const isLoading = ref(false);
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? props.columns.length : props.columns.length + 1);
     const tableRows = ref<any[]>([]);
@@ -295,7 +293,7 @@ export const DataTable = defineComponent({
       ),
       h("div", { class: "responsive-table ion-padding-horizontal" },
         h("table", { class: "table bordered-table striped-table" }, [
-          h("thead", { class: props.color || globals?.color || "" },
+          h("thead", { class: props.color || "" },
             h("tr", [
               ...props.columns.map(column =>
                 h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },

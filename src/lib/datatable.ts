@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
 import orderBy from "lodash/orderBy";
 import range from "lodash/range";
-import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText } from "@ionic/vue";
+import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText, toastController } from "@ionic/vue";
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
@@ -81,7 +81,7 @@ export const DataTable = defineComponent({
       }, {} as Record<string, any>)
     );
 
-    const emitCustomFilters = () => {
+    const emitCustomFilters = (isBtnClicked = false) => {
       if (props.customFilters.every(f => {
         if (f.required === false) return true
         if (typeof customFiltersValues[f.id] === 'object') {
@@ -90,6 +90,13 @@ export const DataTable = defineComponent({
         return !isEmpty(customFiltersValues[f.id])
       })) {
         emit("customFilter", customFiltersValues);
+      } else if (isBtnClicked) {
+        toastController.create({
+          message: "Invalid filters",
+          duration: 2000,
+          color: 'warning',
+          buttons: [{text: 'x', role: 'cancel'}]
+        }).then(toast => toast.present())
       }
     }
 

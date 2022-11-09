@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, inject, onMounted, PropType, reactive, ref, watch } from "vue";
+import { computed, defineComponent, h, onMounted, PropType, reactive, ref, watch } from "vue";
 import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TableGlobalConfig } from "./types";
 import './datatable.css'
 import get from 'lodash/get';
@@ -68,7 +68,7 @@ export const DataTable = defineComponent({
       }
     });
 
-    const showFilterSection = computed(() => {
+    const showFilterSection = computed<boolean>(() => {
       return props.config.showSearchField !== false ||
         props.customFilters.length > 0 ||
         props.actionsButtons.length > 0
@@ -81,27 +81,7 @@ export const DataTable = defineComponent({
       }, {} as Record<string, any>)
     );
 
-    const emitCustomFilters = (isBtnClicked = false) => {
-      if (props.customFilters.every(f => {
-        if (f.required === false) return true
-        if (typeof customFiltersValues[f.id] === 'object') {
-          return Object.values(customFiltersValues[f.id]).every(v => !isEmpty(v))
-        }
-        return !isEmpty(customFiltersValues[f.id])
-      })) {
-        emit("customFilter", customFiltersValues);
-      } else if (isBtnClicked) {
-        toastController.create({
-          message: "Invalid filters",
-          position: 'top',
-          duration:3000,
-          color: 'warning',
-          buttons: [{text: 'x', role: 'cancel'}]
-        }).then(toast => toast.present())
-      }
-    }
-
-    watch(customFiltersValues, () => props.config.showSubmitButton === false && emitCustomFilters(), {
+    watch(customFiltersValues, () => props.config.showSubmitButton === false && emit("customFilter", customFiltersValues), {
       immediate: true,
       deep: true
     });
@@ -282,7 +262,7 @@ export const DataTable = defineComponent({
                 }
               }),
               props.customFilters.length > 0 && props.config.showSubmitButton !== false && h(IonCol, { size: '2', class: "ion-margin-bottom" },
-                h(IonButton, { color: "primary", onClick: emitCustomFilters }, 'Submit')
+                h(IonButton, { color: "primary", onClick: () => emit("customFilter", customFiltersValues) }, 'Submit')
               )
             ])
           ),

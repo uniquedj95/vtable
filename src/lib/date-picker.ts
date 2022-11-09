@@ -14,30 +14,8 @@ export const DateRangePicker =  defineComponent({
   setup (props, { emit }) {
     const start = ref(props.range.startDate);
     const end = ref(props.range.endDate);
-
-    const isValidRange = (start: string, end: string) => {
-      if(!start || !end) return true
-      return new Date(start) <= new Date(end) ;
-    }
-    const cRange = computed(() => {
-      if(isValidRange(start.value, end.value)) {
-        return { startDate: start.value, endDate: end.value };
-      }
-      toastController.create({
-        message: "Invalid date range",
-        position: 'top',
-        duration: 3000,
-        color: 'warning',
-        buttons: [{text: 'x', role: 'cancel'}]
-      }).then(toast => toast.present())
-    })
-
-    watch(cRange, (newVal) => {
-      if(newVal) {
-        emit("rangeChange", newVal);
-      }
-    })
-
+    const cRange = computed(() => ({ startDate: start.value, endDate: end.value }))
+    watch(cRange, (v) => emit("rangeChange", v))
     return () => 
       h(IonGrid, { class: 'ion-no-padding ion-no-margin'}, 
         h(IonRow, [

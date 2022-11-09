@@ -93,7 +93,8 @@ export const DataTable = defineComponent({
       } else if (isBtnClicked) {
         toastController.create({
           message: "Invalid filters",
-          duration: 2000,
+          position: 'top',
+          duration:3000,
           color: 'warning',
           buttons: [{text: 'x', role: 'cancel'}]
         }).then(toast => toast.present())

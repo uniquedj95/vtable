@@ -1,5 +1,5 @@
 import { computed, defineComponent, h, PropType, ref, watch } from "vue";
-import { IonGrid, IonInput, IonRow, IonCol, IonIcon } from "@ionic/vue";
+import { IonGrid, IonInput, IonRow, IonCol, IonIcon, toastController } from "@ionic/vue";
 import { arrowForward } from "ionicons/icons";
 
 export const DateRangePicker =  defineComponent({
@@ -16,13 +16,19 @@ export const DateRangePicker =  defineComponent({
     const end = ref(props.range.endDate);
 
     const isValidRange = (start: string, end: string) => {
-      if(!start || !end) return false
+      if(!start || !end) return true
       return new Date(start) <= new Date(end) ;
     }
     const cRange = computed(() => {
       if(isValidRange(start.value, end.value)) {
         return { startDate: start.value, endDate: end.value };
       }
+      toastController.create({
+        message: "Invalid date range",
+        duration: 2000,
+        color: 'warning',
+        buttons: [{text: 'x', role: 'cancel'}]
+      }).then(toast => toast.present())
     })
 
     watch(cRange, (newVal) => {

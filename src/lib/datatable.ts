@@ -3,12 +3,12 @@ import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowA
 import './datatable.css'
 import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
-import orderBy from "lodash/orderBy";
 import range from "lodash/range";
 import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText, toastController } from "@ionic/vue";
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
+import { sortRows } from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -99,22 +99,6 @@ export const DataTable = defineComponent({
       ));
     }
 
-    const sort = () => {
-      if (isEmpty(filters.sort) || isEmpty(filteredRows)) return;
-      const orders = filters.sort.map(({ order }) => order);
-      filteredRows.value = orderBy(
-        filteredRows.value,
-        filters.sort.map(({ column }) => (row) => {
-          let value = get(row, column.path);
-          if(!value || isEmpty(value)) return ""
-          if (typeof column.preSort === "function") value = column.preSort(value);
-          if (typeof value === "number" || column.sortCaseSensitive) return value;
-          return value.toString().toLowerCase();
-        }),
-        orders as any
-      );
-    };
-
     const paginate = () => {
       if (isEmpty(filteredRows)) return;
       const start = (filters.pagination.page - 1) * filters.pagination.pageSize;
@@ -199,7 +183,7 @@ export const DataTable = defineComponent({
 
     watch(filters, () => {
       filter();
-      sort()
+      filteredRows.value = sortRows(filteredRows.value, filters.sort)
       paginate()
       calculatePageRange()
     }, {

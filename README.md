@@ -100,6 +100,7 @@ A table column has the following proprties
 | preSort | No | A function that takes each column value and return processed value that is used when sorting |
 | formatter | No | A function that takes column values and return formated values that are displayed on the table |
 
+
 1.2 Action Button
 
 These are top buttons whose actions affects the whole table. An Action Button has the following properties
@@ -110,6 +111,7 @@ These are top buttons whose actions affects the whole table. An Action Button ha
 | icon | No | ionicons | Rendered together with the `label` separated by `|`|
 | color | No | String | Specifies the color of the button. Default is `primary` |
 | action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows and filters`
+
 
 1.3 Row Action Button
 
@@ -123,6 +125,7 @@ These are buttons that are attached to each row for specific row actions. The bu
 | default | No | Boolean | Specifies if the button listens to the whole row clicks. default is `false` |
 | condition | No | Function | A function that returns boolean which is used to determine whether to show or hide the button. Default is `() => true` | 
 | action | Yes | Function | A listener function to button clicks. It receives row data and its index |
+
 
 1.4 Custom Filter
 
@@ -139,6 +142,7 @@ The are filters that are used when fetching data from the source/API. A custom f
 | placeholder | No | String | A placeholder string used on the filter when no value is set |
 | required | No | Boolean | Specifies if the filter is required to be set before before emitting filter events |
 
+
 1.4.1 Filter Option
 
 A filter option is an object that has the following properties
@@ -149,6 +153,7 @@ A filter option is an object that has the following properties
 | value | Yes | String `|` Number | The value of the option |
 | isCheked | No | Boolean | Specifies whether the option is selected. Mostly used with checkboxes, or radio buttons.|
 | other | No | any | Any other data that needs to be passed as part of the option |
+
 
 1.5 Table Config
 

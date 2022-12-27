@@ -48,11 +48,18 @@ export const DataTable = defineComponent({
   emits: ["customFilter", "queryChange", "drilldown"],
   setup(props, { emit }) {
     const isLoading = ref(false);
-    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? props.columns.length : props.columns.length + 1);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
     const activeRows = ref<any[]>([])
     const totalFilteredRows = computed(() => filteredRows.value.length);
+    
+    const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices 
+      ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc"}, ...props.columns] 
+      : props.columns
+    );
+
+    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
+    
     const filters = reactive<TableFilterInterface>({
       search: "",
       sort: [],
@@ -146,7 +153,7 @@ export const DataTable = defineComponent({
     };
 
     const initializeFilters = () => {
-      filters.sort = props.columns
+      filters.sort = tableColumns.value
         .filter(({ initialSort }) => initialSort)
         .map(column => ({
           column,
@@ -176,6 +183,7 @@ export const DataTable = defineComponent({
       } else {
         tableRows.value = props.rows
       }
+      if(props.config.showIndices) tableRows.value = tableRows.value.map((row, i) => ({...row, index: i + 1 }))
     }
 
     watch(() => props.rows, async () => {
@@ -256,7 +264,7 @@ export const DataTable = defineComponent({
             props.actionsButtons.map(btn => h(IonButton, {
               class: 'ion-float-right',
               color: btn.color || 'primary',
-              onClick: () => btn.action(activeRows.value, tableRows.value, filters)
+              onClick: () => btn.action(activeRows.value, tableRows.value, filters, tableColumns.value)
             }, [
               btn.label,
               btn.icon && h('span', { style: { color: 'white', paddingLeft: '5px', paddingRight: '5px' } }, ' | '),
@@ -269,8 +277,8 @@ export const DataTable = defineComponent({
         h("table", { class: "table bordered-table striped-table" }, [
           h("thead", { class: props.color || "" },
             h("tr", [
-              ...props.columns.map(column =>
-                h("th", { key: column.label, style: { inlineSize: 'min-content', wordWrap: 'break-all' }, onClick: () => updateSortQueries(column) },
+              ...tableColumns.value.map(column =>
+                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },
                   [
                     h("span", column.label),
                     column.sortable !== false && h(IonIcon, {
@@ -302,14 +310,14 @@ export const DataTable = defineComponent({
               ? h('tr', h('td', { colspan: totalColumns.value },
                 h('div', { class: 'no-data-table' }, 'No data available')
               ))
-              : activeRows.value.map((row, index) =>
+              : activeRows.value.map((row, rowIndex) =>
                 h('tr', {
                   key: row, onClick: async () => {
                     const defualtActionBtn = props.rowActionsButtons.find(btn => btn.default)
-                    if (defualtActionBtn) await defualtActionBtn.action(row, index)
+                    if (defualtActionBtn) await defualtActionBtn.action(row, rowIndex)
                   }
                 }, [
-                  ...props.columns.map((column, index) => {
+                  ...tableColumns.value.map((column, index) => {
                     let value = get(row, column.path);
                     if (typeof column.formatter === 'function' && value) value = column.formatter(value)
                     return h('td', { key: index, style: { inlineSize: 'min-content', wordWrap: 'break-all' } },
@@ -323,7 +331,7 @@ export const DataTable = defineComponent({
                   !isEmpty(props.rowActionsButtons) && h('td', props.rowActionsButtons.map(btn => {
                     const canShowBtn = typeof btn.condition === 'function' ? btn.condition(row) : true;
                     return canShowBtn
-                      ? h(IonButton, { key: btn.icon, size: 'small', color: btn.color || 'primary', onClick: () => btn.action(row, index) },
+                      ? h(IonButton, { key: btn.icon, size: 'small', color: btn.color || 'primary', onClick: () => btn.action(row, rowIndex) },
                         btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || "Button"
                       )
                       : null
@@ -400,12 +408,11 @@ export const DataTable = defineComponent({
             ]),
           ]),
           h(IonCol, { size: '4', style: { marginTop: '1rem', textAlign: 'right', fontWeight: 500 } }, totalFilteredRows.value
-            ? `Showing ${(computed(() => (filters.pagination.page === 1) ? 1 : (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1)
-            )).value
-            } to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages)
-              ? totalFilteredRows.value
-              : filters.pagination.page * filters.pagination.pageSize
-            )).value
+            ? `Showing ${(computed(() => (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1))).value} 
+              to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages) 
+                ? totalFilteredRows.value 
+                : filters.pagination.page * filters.pagination.pageSize
+              )).value
             } of ${totalFilteredRows.value} entries`
             : "No data available"
           )

@@ -46,7 +46,7 @@ export interface TableFilterInterface {
 export interface ActionButtonInterface {
   label: string;
   icon?: string;
-  action: (activeRows: any[], allRows: any[], filters: TableFilterInterface) => any;
+  action: (activeRows: any[], allRows: any[], filters: TableFilterInterface, columns: TableColumnInterface[]) => any;
   color?: string;
 }
 
@@ -73,6 +73,7 @@ export interface CustomFilterInterface {
 export interface TableConfigInterface {
   showSubmitButton?: boolean;
   showSearchField?: boolean;
+  showIndices?: boolean;
 }
 
 export interface TableGlobalConfig {

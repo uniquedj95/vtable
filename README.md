@@ -110,7 +110,7 @@ These are top buttons whose actions affects the whole table. An Action Button ha
 | label | Yes | String | used as button label e.g `submit` |
 | icon | No | ionicons | Rendered together with the `label` separated by `|`|
 | color | No | String | Specifies the color of the button. Default is `primary` |
-| action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows and filters`
+| action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows, filters and columns`
 
 
 1.3 Row Action Button
@@ -162,7 +162,9 @@ These are general configuration that affects how the datatable functions. The co
 | Property name | Required | type | Default | Description |
 |---------------|----------|------|---------|-------------|
 | showSubmitButton | No | Boolean | false | Specifies whether to show/hide the submit buttom for custom filters. When enabled, filter changes does not immediately emit filter events till the submit button is pressed. |
-| showSearchField | No | Boolean | true | Secifies whether to show or hide the search input field. When disabled, the search field will be completely hidden even when the data is available |
+| showSearchField | No | Boolean | true | Specifies whether to show or hide the search input field. When disabled, the search field will be completely hidden even when the data is available |
+| showIndices | No | Boolean | false | Specifies whether to show index numbers column |
+
 
 #### 2. Events
 

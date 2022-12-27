@@ -2,6 +2,8 @@
 
 An advanced Data table for Ionic Vue framework.
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=uniquedj95_vtable&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=uniquedj95_vtable)
+
 ![Example Table](screenshort.png "Example Table")
 
 ## Installation

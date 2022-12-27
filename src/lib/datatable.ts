@@ -319,7 +319,7 @@ export const DataTable = defineComponent({
                 }, [
                   ...tableColumns.value.map((column, index) => {
                     let value = get(row, column.path);
-                    if (typeof column.formatter === 'function' && value) value = column.formatter(value)
+                    if (typeof column.formatter === 'function' && value) value = column.formatter(value, row)
                     return h('td', { key: index, style: { inlineSize: 'min-content', wordWrap: 'break-all' } },
                       column.drillable && !isEmpty(value)
                         ? h('a', { onClick: () => emit("drilldown", { column, row }) }, Array.isArray(value) ? value.length : value)

@@ -1,10 +1,10 @@
 import { computed, defineComponent, h, onMounted, PropType, reactive, ref, watch } from "vue";
-import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TableGlobalConfig } from "./types";
+import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option } from "./types";
 import './datatable.css'
 import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
 import range from "lodash/range";
-import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText, toastController } from "@ionic/vue";
+import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonSkeletonText } from "@ionic/vue";
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
@@ -181,6 +181,7 @@ export const DataTable = defineComponent({
       } else {
         tableRows.value = props.rows
       }
+      if(props.config.showIndices) tableRows.value = tableRows.value.map((row, i) => ({...row, index: i + 1 }))
     }
 
     watch(() => props.rows, async () => {
@@ -315,9 +316,7 @@ export const DataTable = defineComponent({
                   }
                 }, [
                   ...tableColumns.value.map(column => {
-                    let value = column.path.match(/index/i) 
-                      ? (computed(() => (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1) + rowIndex)).value  
-                      : get(row, column.path);
+                    let value = get(row, column.path);
                     if (typeof column.formatter === 'function' && value) value = column.formatter(value)
                     return h('td', { key: column.path, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' } },
                       column.drillable && !isEmpty(value)

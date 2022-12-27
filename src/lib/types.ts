@@ -73,6 +73,7 @@ export interface CustomFilterInterface {
 export interface TableConfigInterface {
   showSubmitButton?: boolean;
   showSearchField?: boolean;
+  showIndices?: boolean;
 }
 
 export interface TableGlobalConfig {

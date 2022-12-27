@@ -48,11 +48,18 @@ export const DataTable = defineComponent({
   emits: ["customFilter", "queryChange", "drilldown"],
   setup(props, { emit }) {
     const isLoading = ref(false);
-    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? props.columns.length : props.columns.length + 1);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
     const activeRows = ref<any[]>([])
     const totalFilteredRows = computed(() => filteredRows.value.length);
+    
+    const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices 
+      ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc"}, ...props.columns] 
+      : props.columns
+    );
+
+    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
+    
     const filters = reactive<TableFilterInterface>({
       search: "",
       sort: [],
@@ -144,7 +151,7 @@ export const DataTable = defineComponent({
     };
 
     const initializeFilters = () => {
-      filters.sort = props.columns
+      filters.sort = tableColumns.value
         .filter(({ initialSort }) => initialSort)
         .map(column => ({
           column,
@@ -267,7 +274,7 @@ export const DataTable = defineComponent({
         h("table", { class: "table bordered-table striped-table" }, [
           h("thead", { class: props.color || "" },
             h("tr", [
-              ...props.columns.map(column =>
+              ...tableColumns.value.map(column =>
                 h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },
                   [
                     h("span", column.label),
@@ -300,15 +307,15 @@ export const DataTable = defineComponent({
               ? h('tr', h('td', { colspan: totalColumns.value },
                 h('div', { class: 'no-data-table' }, 'No data available')
               ))
-              : activeRows.value.map((row, index) =>
+              : activeRows.value.map((row, rowIndex) =>
                 h('tr', {
                   key: row, onClick: async () => {
                     const defualtActionBtn = props.rowActionsButtons.find(btn => btn.default)
-                    if (defualtActionBtn) await defualtActionBtn.action(row, index)
+                    if (defualtActionBtn) await defualtActionBtn.action(row, rowIndex)
                   }
                 }, [
-                  ...props.columns.map(column => {
-                    let value = get(row, column.path);
+                  ...tableColumns.value.map(column => {
+                    let value = column.path.match(/index/i) ? rowIndex + 1 : get(row, column.path);
                     if (typeof column.formatter === 'function' && value) value = column.formatter(value)
                     return h('td', { key: column.path, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' } },
                       column.drillable && !isEmpty(value)
@@ -321,7 +328,7 @@ export const DataTable = defineComponent({
                   !isEmpty(props.rowActionsButtons) && h('td', props.rowActionsButtons.map(btn => {
                     const canShowBtn = typeof btn.condition === 'function' ? btn.condition(row) : true;
                     return canShowBtn
-                      ? h(IonButton, { key: btn.icon, size: 'small', color: btn.color || 'primary', onClick: () => btn.action(row, index) },
+                      ? h(IonButton, { key: btn.icon, size: 'small', color: btn.color || 'primary', onClick: () => btn.action(row, rowIndex) },
                         btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || "Button"
                       )
                       : null

@@ -2,7 +2,17 @@
 
 An advanced Data table for Ionic Vue framework.
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=uniquedj95_vtable&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=uniquedj95_vtable)
+<p>
+  <a href="https://sonarcloud.io/summary/new_code?id=uniquedj95_vtable"><img src="https://sonarcloud.io/api/project_badges/measure?project=uniquedj95_vtable&metric=alert_status" /></a>
+  <a href="https://ionicframework.com/"><img src="https://badgen.net/badge/Ionic/5.x/blue" alt="Ionic"></a>
+  <a href="https://vuejs.org/"><img src="https://badgen.net/badge/Vue/3.x/cyan" alt="Vue"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://badgen.net/badge/Typescript/4.x/yellow" alt="TS"></a>
+  <a href="https://lodash.com/"><img src="https://badgen.net/badge/Lodash/4.x/blue" alt="Lodash"></a>
+  <a href="https://www.npmjs.com/package/@uniquedj95/vtable"><img src="https://img.shields.io/npm/dm/@uniquedj95/vtable.svg" alt="Downloads"></a>
+</p>
+
+
+
 
 ![Example Table](screenshort.png "Example Table")
 

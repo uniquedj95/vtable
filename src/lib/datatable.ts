@@ -58,8 +58,6 @@ export const DataTable = defineComponent({
       : props.columns
     );
 
-    console.log(tableColumns.value);
-
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
     
     const filters = reactive<TableFilterInterface>({
@@ -317,7 +315,9 @@ export const DataTable = defineComponent({
                   }
                 }, [
                   ...tableColumns.value.map(column => {
-                    let value = column.path.match(/index/i) ? rowIndex + 1 : get(row, column.path);
+                    let value = column.path.match(/index/i) 
+                      ? (computed(() => (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1) + rowIndex)).value  
+                      : get(row, column.path);
                     if (typeof column.formatter === 'function' && value) value = column.formatter(value)
                     return h('td', { key: column.path, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' } },
                       column.drillable && !isEmpty(value)
@@ -407,12 +407,11 @@ export const DataTable = defineComponent({
             ]),
           ]),
           h(IonCol, { size: '4', style: { marginTop: '1rem', textAlign: 'right', fontWeight: 500 } }, totalFilteredRows.value
-            ? `Showing ${(computed(() => (filters.pagination.page === 1) ? 1 : (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1)
-            )).value
-            } to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages)
-              ? totalFilteredRows.value
-              : filters.pagination.page * filters.pagination.pageSize
-            )).value
+            ? `Showing ${(computed(() => (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1))).value} 
+              to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages) 
+                ? totalFilteredRows.value 
+                : filters.pagination.page * filters.pagination.pageSize
+              )).value
             } of ${totalFilteredRows.value} entries`
             : "No data available"
           )

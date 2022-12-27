@@ -261,7 +261,7 @@ export const DataTable = defineComponent({
             props.actionsButtons.map(btn => h(IonButton, {
               class: 'ion-float-right',
               color: btn.color || 'primary',
-              onClick: () => btn.action(activeRows.value, tableRows.value, filters)
+              onClick: () => btn.action(activeRows.value, tableRows.value, filters, tableColumns.value)
             }, [
               btn.label,
               btn.icon && h('span', { style: { color: 'white', paddingLeft: '5px', paddingRight: '5px' } }, ' | '),

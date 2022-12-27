@@ -17,7 +17,7 @@ export interface TableColumnInterface {
   sortCaseSensitive?: boolean;
   drillable?: boolean;
   preSort?: (value: any) => any;
-  formatter?: (value: any) => any;
+  formatter?: (value: any, row: any) => any;
 }
 
 export interface SortQueryInterface {

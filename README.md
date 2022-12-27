@@ -109,7 +109,7 @@ These are top buttons whose actions affects the whole table. An Action Button ha
 | label | Yes | String | used as button label e.g `submit` |
 | icon | No | ionicons | Rendered together with the `label` separated by `|`|
 | color | No | String | Specifies the color of the button. Default is `primary` |
-| action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows and filters`
+| action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows, filters and columns`
 
 1.3 Row Action Button
 

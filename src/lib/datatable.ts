@@ -58,6 +58,8 @@ export const DataTable = defineComponent({
       : props.columns
     );
 
+    console.log(tableColumns.value);
+
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
     
     const filters = reactive<TableFilterInterface>({

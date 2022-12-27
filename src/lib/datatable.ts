@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import { sortRows } from "./utils";
+import { buildPaginationInfo, sortRows } from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -52,14 +52,14 @@ export const DataTable = defineComponent({
     const filteredRows = ref<any[]>([]);
     const activeRows = ref<any[]>([])
     const totalFilteredRows = computed(() => filteredRows.value.length);
-    
-    const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices 
-      ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc"}, ...props.columns] 
+
+    const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices
+      ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc" }, ...props.columns]
       : props.columns
     );
 
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
-    
+
     const filters = reactive<TableFilterInterface>({
       search: "",
       sort: [],
@@ -183,13 +183,13 @@ export const DataTable = defineComponent({
       } else {
         tableRows.value = props.rows
       }
-      if(props.config.showIndices) tableRows.value = tableRows.value.map((row, i) => ({...row, index: i + 1 }))
+      if (props.config.showIndices) tableRows.value = tableRows.value.map((row, i) => ({ ...row, index: i + 1 }))
     }
 
     watch(() => props.rows, async () => {
       await initializeRows();
       initializeFilters();
-    }, { deep: true, immediate: true});
+    }, { deep: true, immediate: true });
 
     watch(filters, () => {
       filter();
@@ -233,9 +233,9 @@ export const DataTable = defineComponent({
                     })
                   )
                 } else if (filter.type === 'select') {
-                  return h(IonCol, { size: `${filter.gridSize}` || '3' }, 
-                    h(SelectInput, { 
-                      options: filter.options, 
+                  return h(IonCol, { size: `${filter.gridSize}` || '3' },
+                    h(SelectInput, {
+                      options: filter.options,
                       placeholder: filter.label || filter.placeholder || 'Select Item',
                       value: filter.value,
                       onSelect: (v: Option | Option[]) => customFiltersValues[filter.id] = v
@@ -407,15 +407,9 @@ export const DataTable = defineComponent({
               ]),
             ]),
           ]),
-          h(IonCol, { size: '4', style: { marginTop: '1rem', textAlign: 'right', fontWeight: 500 } }, totalFilteredRows.value
-            ? `Showing ${(computed(() => (filters.pagination.page * filters.pagination.pageSize) - (filters.pagination.pageSize - 1))).value} 
-              to ${(computed(() => (filters.pagination.page === filters.pagination.totalPages) 
-                ? totalFilteredRows.value 
-                : filters.pagination.page * filters.pagination.pageSize
-              )).value
-            } of ${totalFilteredRows.value} entries`
-            : "No data available"
-          )
+          h(IonCol, { size: '4', class: "pagination-info" }, (computed(() => {
+            return buildPaginationInfo(filters.pagination, totalFilteredRows.value)
+          })).value )
         ])
       )
     ]

@@ -1,7 +1,7 @@
 import get from "lodash/get";
 import isEmpty from "lodash/isEmpty";
 import orderBy from "lodash/orderBy";
-import { SortQueryInterface } from "./types";
+import { PaginationInterface, SortQueryInterface } from "./types";
 
 /**
  * A function that sort table rows based on specified sort queries
@@ -25,3 +25,17 @@ export function sortRows(rows: any[], query: SortQueryInterface[]) {
     orders as any
   );
 };
+
+/**
+ * Builds pagination information summary
+ * 
+ * @param paginator The current pagination filter
+ * @param totalRows Total filtered rows
+ * @returns string
+ */
+export function buildPaginationInfo (paginator: PaginationInterface, totalRows?: number): string {
+  const { page, pageSize, totalPages} = paginator;
+  return totalRows 
+    ? `Showing ${(page * pageSize) - (pageSize - 1)} to ${(page === totalPages) ? totalRows : page * pageSize} of ${totalRows} entries`
+    : "No data available"
+}

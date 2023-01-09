@@ -153,6 +153,7 @@ The are filters that are used when fetching data from the source/API. A custom f
 | options| No | Array | List of options required for select input filters |
 | placeholder | No | String | A placeholder string used on the filter when no value is set |
 | required | No | Boolean | Specifies if the filter is required to be set before before emitting filter events |
+| multiple | No | Boolean | Requires type to be set to `select`. Specifies whether to select multiple items or not |
 
 
 1.4.1 Filter Option

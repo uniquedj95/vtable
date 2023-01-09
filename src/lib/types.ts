@@ -68,6 +68,7 @@ export interface CustomFilterInterface {
   options?: Option[];
   placeholder?: string;
   required?: boolean;
+  multiple?: boolean;
 }
 
 export interface TableConfigInterface {

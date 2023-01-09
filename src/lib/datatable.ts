@@ -238,6 +238,7 @@ export const DataTable = defineComponent({
                       options: filter.options, 
                       placeholder: filter.label || filter.placeholder || 'Select Item',
                       value: filter.value,
+                      multiple: filter.multiple,
                       onSelect: (v: Option | Option[]) => customFiltersValues[filter.id] = v
                     })
                   )

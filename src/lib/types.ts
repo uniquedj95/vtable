@@ -69,6 +69,7 @@ export interface CustomFilterInterface {
   placeholder?: string;
   required?: boolean;
   multiple?: boolean;
+  onUpdate?: (value: any) => any
 }
 
 export interface TableConfigInterface {

@@ -228,6 +228,7 @@ export const DataTable = defineComponent({
                     h(DateRangePicker, {
                       range: (computed(() => filter.value || { startDate: "", endDate: "" })).value,
                       onRangeChange: async (newRange: any) => {
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(newRange);
                         customFiltersValues[filter.id] = newRange;
                       }
                     })
@@ -239,7 +240,10 @@ export const DataTable = defineComponent({
                       placeholder: filter.label || filter.placeholder || 'Select Item',
                       value: filter.value,
                       multiple: filter.multiple,
-                      onSelect: (v: Option | Option[]) => customFiltersValues[filter.id] = v
+                      onSelect: (v: Option | Option[]) => {
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(v);
+                        customFiltersValues[filter.id] = v
+                      }
                     })
                   )
                 } else {
@@ -250,7 +254,9 @@ export const DataTable = defineComponent({
                       placeholder: filter.placeholder,
                       value: (computed(() => filter.value || "")).value,
                       onIonInput: async (e: Event) => {
-                        customFiltersValues[filter.id] = (e.target as HTMLInputElement).value;
+                        const value =  (e.target as HTMLInputElement).value;
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(value);
+                        customFiltersValues[filter.id] = value;
                       }
                     })
                   )

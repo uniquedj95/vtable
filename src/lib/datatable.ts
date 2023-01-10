@@ -224,7 +224,7 @@ export const DataTable = defineComponent({
               ),
               ...props.customFilters.map(filter => {
                 if (filter.slotName && typeof slots[filter.slotName] === "function") {
-                  return slots[filter.slotName]!({filter})
+                  return h(IonCol, { size: `${filter.gridSize}` || '3' }, slots[filter.slotName]!({filter}))
                 }
                 if (filter.type === 'dateRange') {
                   return h(IonCol, { size: `${filter.gridSize}` || '6' },

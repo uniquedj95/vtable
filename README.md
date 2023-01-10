@@ -155,7 +155,7 @@ The are filters that are used when fetching data from the source/API. A custom f
 | required | No | Boolean | Specifies if the filter is required to be set before before emitting filter events |
 | multiple | No | Boolean | Requires type to be set to `select`. Specifies whether to select multiple items or not |
 | onUpdate | No | Function | A callback function that is called whenever filter value changes |
-
+| slotName | No | String | used in defining named slots for advanced filters |
 
 1.4.1 Filter Option
 

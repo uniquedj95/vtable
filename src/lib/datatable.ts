@@ -46,7 +46,7 @@ export const DataTable = defineComponent({
     }
   },
   emits: ["customFilter", "queryChange", "drilldown"],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const isLoading = ref(false);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
@@ -223,6 +223,9 @@ export const DataTable = defineComponent({
                 })
               ),
               ...props.customFilters.map(filter => {
+                if (filter.slotName && typeof slots[filter.slotName] === "function") {
+                  return slots[filter.slotName]!({filter})
+                }
                 if (filter.type === 'dateRange') {
                   return h(IonCol, { size: `${filter.gridSize}` || '6' },
                     h(DateRangePicker, {

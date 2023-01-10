@@ -69,7 +69,8 @@ export interface CustomFilterInterface {
   placeholder?: string;
   required?: boolean;
   multiple?: boolean;
-  onUpdate?: (value: any) => any
+  onUpdate?: (value: any) => any,
+  slotName?: string
 }
 
 export interface TableConfigInterface {

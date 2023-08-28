@@ -225,7 +225,7 @@ export const DataTable = defineComponent({
     };
 
     const renderPagination = () => {
-      h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
+      return h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
         h(IonRow, [
           h(IonCol, { size: '4' }, renderPaginationControls()),
           h(IonCol, { size: '4', class: "text-center" }, [

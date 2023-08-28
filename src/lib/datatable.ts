@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import { buildPaginationInfo, initializeSortQueries, sortRows, updateSortQueries } from "./utils";
+import * as DT from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -152,36 +152,26 @@ export const DataTable = defineComponent({
       filters.pagination.start = Math.max(filters.pagination.start, 1);
     };
 
-    const initializeRows = async () => {
-      if (typeof props.asyncRows === "function") {
-        isLoading.value = true;
-        tableRows.value = await props.asyncRows();
-        isLoading.value = false;
-      } else {
-        tableRows.value = props.rows
-      }
-      if (props.config.showIndices) tableRows.value = tableRows.value.map((row, i) => ({ ...row, index: i + 1 }))
+    const init = async () => {
+      isLoading.value = true;
+      tableRows.value = await DT.getRows(props.asyncRows, props.rows, props.config?.showIndices);
+      filters.sort = DT.initializeSortQueries(tableColumns.value);
+      isLoading.value = false;
     }
 
-    watch(() => props.rows, async () => {
-      await initializeRows();
-      filters.sort = initializeSortQueries(tableColumns.value);
-    }, { deep: true, immediate: true });
-
+    
     watch(filters, () => {
       filter();
-      filteredRows.value = sortRows(filteredRows.value, filters.sort)
+      filteredRows.value = DT.sortRows(filteredRows.value, filters.sort)
       paginate()
       calculatePageRange()
     }, {
       immediate: true,
       deep: true
     })
-
-    onMounted(async () => {
-      await initializeRows()
-      filters.sort = initializeSortQueries(tableColumns.value);
-    });
+    
+    watch(() => props.rows, () => init(), { deep: true, immediate: true });
+    onMounted(async () => init());
 
     return () => [
       showFilterSection.value && h(IonGrid, { class: "ion-padding-vertical", style: { width: '100%', fontWeight: 500 } },
@@ -265,7 +255,7 @@ export const DataTable = defineComponent({
           h("thead", { class: props.color || "" },
             h("tr", [
               ...tableColumns.value.map(column =>
-                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(filters.sort, column) },
+                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => DT.updateSortQueries(filters.sort, column) },
                   [
                     h("span", column.label),
                     column.sortable !== false && h(IonIcon, {
@@ -395,7 +385,7 @@ export const DataTable = defineComponent({
             ]),
           ]),
           h(IonCol, { size: '4', class: "pagination-info" }, (computed(() => {
-            return buildPaginationInfo(filters.pagination, totalFilteredRows.value)
+            return DT.buildPaginationInfo(filters.pagination, totalFilteredRows.value)
           })).value )
         ])
       )

@@ -237,7 +237,21 @@ input[type="search"]::-webkit-search-cancel-button {
   width: 100%;
   display: inline-block;
 }
-  
+
+.go-to-input { 
+  display: inline-block;
+  --min-height: 11px;
+  width: 190px;
+  margin-left: .5rem 
+}
+
+.per-page-input { 
+  display: inline-block;
+  --min-height: 11px;
+  width: 240px; 
+  margin-left: .5rem
+}
+
 .input-options {
   position: absolute;
   width: 100%;
@@ -270,4 +284,13 @@ input[type="search"]::-webkit-search-cancel-button {
 .input-placeholder {
   color: #a0a0a0;
   margin: 0.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.data-cell { 
+  inline-size: min-content;
+  word-wrap: break-all;
 }

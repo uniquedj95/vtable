@@ -59,12 +59,14 @@ export interface RowActionButtonInterface {
   condition?: (row: any) => boolean;
 }
 
+export type TextFieldTypes = "text" | "number" | "date";
+
 export interface CustomFilterInterface {
   id: string;
   label?: string;
   value?: any;
   gridSize?: number; // numbers between 1 and 12
-  type: "text" | "number" | "date" | "select" | "dateRange";
+  type: TextFieldTypes | "select" | "dateRange"
   options?: Option[];
   placeholder?: string;
   required?: boolean;
@@ -81,4 +83,11 @@ export interface TableConfigInterface {
 
 export interface TableGlobalConfig {
   color: "primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"
+}
+
+export interface PaginationButton {
+  onClick?: () => void;
+  icon?: string;
+  label?: string | number;
+  disabled?: boolean
 }

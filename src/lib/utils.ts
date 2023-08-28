@@ -63,6 +63,67 @@ export function buildPaginationInfo(paginator: PaginationInterface, totalRows: n
 }
 
 /**
+ * Calculates the range of visible page numbers for pagination.
+ *
+ * @param {PaginationInterface} paginator - The pagination settings.
+ * @param {number} totalRows - The total number of rows.
+ * @param {Array<number>} pages - An array of current visible page numbers.
+ * @returns {PaginationInterface} The updated pagination settings.
+ */
+export function calculatePageRange(paginator: PaginationInterface, totalRows: number, pages: Array<number>): PaginationInterface {
+  // Calculate the total number of pages
+  paginator.totalPages = Math.ceil(totalRows / paginator.pageSize);
+
+  // If total pages are within visibleBtns, show all pages
+  if (paginator.totalPages <= paginator.visibleBtns) {
+    paginator.start = 1;
+    paginator.end = paginator.totalPages;
+    return paginator;
+  }
+
+  // Return if start and end page numbers are already visible
+  if (
+    (pages.includes(paginator.page - 1) || paginator.page === 1) &&
+    (pages.includes(paginator.page + 1) || paginator.page === paginator.totalPages)
+  ) {
+    return paginator;
+  }
+
+  // Calculate the range of visible page numbers
+  paginator.start = paginator.page === 1 ? 1 : paginator.page - 1;
+  paginator.end = paginator.start + paginator.visibleBtns - 5;
+
+  // Adjust start and end if they go out of bounds
+  if (paginator.start <= 3) {
+    paginator.end += 3 - paginator.start;
+    paginator.start = 1;
+  }
+
+  if (paginator.end >= paginator.totalPages - 2) {
+    paginator.start -= paginator.end - (paginator.totalPages - 2);
+    paginator.end = paginator.totalPages;
+  }
+
+  // Ensure start is within valid range
+  paginator.start = Math.max(paginator.start, 1);
+  return paginator;
+}
+
+/**
+ * Paginates an array of rows based on the provided pagination settings.
+ *
+ * @param {Array<any>} rows - The array of rows to be paginated.
+ * @param {PaginationInterface} paginator - The pagination settings.
+ * @returns {Array<any>} The paginated array of rows.
+ */
+export function paginateRows(rows: Array<any>, paginator: PaginationInterface): Array<any> {
+  if(isEmpty(rows)) return rows;
+  const start = (paginator.start - 1) * paginator.pageSize;
+  const end = start + paginator.pageSize;
+  return rows.slice(start, end);
+}
+
+/**
  * Initializes sort queries based on column configurations.
  *
  * @param {Array<TableColumnInterface>} columns - An array of table columns.

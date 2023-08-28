@@ -149,3 +149,19 @@ export function updateSortQueries (sortQueries: Array<SortQueryInterface>, colum
   else sortQueries = [{ column, order: 'asc' }]
   return sortQueries;
 }
+
+/**
+ * Filters an array of rows based on a query string.
+ *
+ * @param {Array<any>} rows - The array of rows to be filtered.
+ * @param {string} query - The query string for filtering.
+ * @returns {Array<any>} The filtered array of rows.
+ */
+export function filterRows(rows: Array<any>, query: string): Array<any> {
+  if (!query) return rows;
+  return rows.filter(row => 
+    Object.values(row).some(v => 
+      v && JSON.stringify(v).toLowerCase().includes(query.toLowerCase())
+    )
+  );
+}

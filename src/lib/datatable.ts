@@ -52,13 +52,11 @@ export const DataTable = defineComponent({
     const filteredRows = ref<any[]>([]);
     const activeRows = ref<any[]>([])
     const totalFilteredRows = computed(() => filteredRows.value.length);
-
+    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
     const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices
       ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc" }, ...props.columns]
       : props.columns
     );
-
-    const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
 
     const filters = reactive<TableFilterInterface>({
       search: "",
@@ -92,17 +90,6 @@ export const DataTable = defineComponent({
       : []
     )
 
-    const filter = () => {
-      if (!filters.search) {
-        filteredRows.value = tableRows.value;
-        return
-      }
-      const filter = filters.search.toLowerCase();
-      filteredRows.value = tableRows.value.filter(row => Object.values(row).some((value: any) =>
-        value && JSON.stringify(value).toLowerCase().includes(filter)
-      ));
-    }
-
     const init = async () => {
       isLoading.value = true;
       tableRows.value = await DT.getRows(props.asyncRows, props.rows, props.config?.showIndices);
@@ -112,14 +99,13 @@ export const DataTable = defineComponent({
 
     
     watch(filters, () => {
-      filter();
-      filteredRows.value = DT.sortRows(filteredRows.value, filters.sort)
-      activeRows.value = DT.paginateRows(filteredRows.value, filters.pagination)
+      filteredRows.value = DT.sortRows(DT.filterRows(tableRows.value, filters.search), filters.sort);
+      activeRows.value = DT.paginateRows(filteredRows.value, filters.pagination);
       DT.calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
     }, {
       immediate: true,
       deep: true
-    })
+    });
 
     watch(customFiltersValues, () => props.config.showSubmitButton === false && emit("customFilter", customFiltersValues), {
       immediate: true,

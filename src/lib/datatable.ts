@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import * as DT from "./utils";
+import { buildPaginationInfo, calculatePageRange, filterRows, getRows, initializeSortQueries, paginateRows, sortRows, updateSortQueries } from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -89,16 +89,16 @@ export const DataTable = defineComponent({
 
     const init = async () => {
       isLoading.value = true;
-      tableRows.value = await DT.getRows(props.asyncRows, props.rows, props.config?.showIndices);
-      filters.sort = DT.initializeSortQueries(tableColumns.value);
+      tableRows.value = await getRows(props.asyncRows, props.rows, props.config?.showIndices);
+      filters.sort = initializeSortQueries(tableColumns.value);
       isLoading.value = false;
     }
 
 
     watch(filters, () => {
-      filteredRows.value = DT.sortRows(DT.filterRows(tableRows.value, filters.search), filters.sort);
-      activeRows.value = DT.paginateRows(filteredRows.value, filters.pagination);
-      DT.calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
+      filteredRows.value = sortRows(filterRows(tableRows.value, filters.search), filters.sort);
+      activeRows.value = paginateRows(filteredRows.value, filters.pagination);
+      calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
     }, {
       immediate: true,
       deep: true
@@ -296,7 +296,7 @@ export const DataTable = defineComponent({
 
     const renderPaginationInfo = () => {
       return h(IonCol, { size: '4', class: "pagination-info" }, (computed(() => {
-        return DT.buildPaginationInfo(filters.pagination, totalFilteredRows.value);
+        return buildPaginationInfo(filters.pagination, totalFilteredRows.value);
       })).value);
     };
 
@@ -321,7 +321,7 @@ export const DataTable = defineComponent({
 
     const renderTableHeaderCell = (column: TableColumnInterface) => {
       const style = { minWidth: column.path.match(/index/i) ? '80px' : '190px' };
-      const onClick = () => filters.sort = DT.updateSortQueries(filters.sort, column);
+      const onClick = () => filters.sort = updateSortQueries(filters.sort, column);
       return h("th", { key: column.label, style, onClick }, [
         h("span", column.label),
         column.sortable !== false && renderSortIcon(column),

@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import { buildPaginationInfo, sortRows } from "./utils";
+import { buildPaginationInfo, initializeSortQueries, sortRows } from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -152,14 +152,14 @@ export const DataTable = defineComponent({
       filters.pagination.start = Math.max(filters.pagination.start, 1);
     };
 
-    const initializeFilters = () => {
-      filters.sort = tableColumns.value
-        .filter(({ initialSort }) => initialSort)
-        .map(column => ({
-          column,
-          order: column.initialSortOrder || "asc"
-        }));
-    }
+    // const initializeFilters = () => {
+    //   filters.sort = tableColumns.value
+    //     .filter(({ initialSort }) => initialSort)
+    //     .map(column => ({
+    //       column,
+    //       order: column.initialSortOrder || "asc"
+    //     }));
+    // }
 
     const updateSortQueries = (column: TableColumnInterface) => {
       const queryIndex = filters.sort.findIndex((s) => s.column.path === column.path);
@@ -188,7 +188,7 @@ export const DataTable = defineComponent({
 
     watch(() => props.rows, async () => {
       await initializeRows();
-      initializeFilters();
+      filters.sort = initializeSortQueries(tableColumns.value);
     }, { deep: true, immediate: true });
 
     watch(filters, () => {
@@ -203,7 +203,7 @@ export const DataTable = defineComponent({
 
     onMounted(async () => {
       await initializeRows()
-      initializeFilters();
+      filters.sort = initializeSortQueries(tableColumns.value);
     });
 
     return () => [

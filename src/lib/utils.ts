@@ -4,6 +4,26 @@ import orderBy from "lodash/orderBy";
 import { PaginationInterface, SortQueryInterface, TableColumnInterface } from "./types";
 
 /**
+ * A function that retrieves an array of rows asynchronously.
+ * 
+ * @returns {Promise<Array<any>>} A promise resolving to an array of rows.
+ */
+type RowsGetter = () => Promise<Array<any>>;
+
+/**
+ * Retrieves an array of rows either from a getter function or the provided default rows.
+ *
+ * @param {RowsGetter} getter - An optional function to retrieve rows asynchronously.
+ * @param {Array<any>} defaultRows - An array of default rows (empty by default).
+ * @param {boolean} indexed - If true, adds an 'index' property to each row.
+ * @returns {Promise<Array<any>>} An array of rows.
+ */
+export async function getRows(getter?: RowsGetter, defaultRows: Array<any> = [], indexed: boolean = false): Promise<Array<any>> {
+  if (typeof getter === 'function') defaultRows = await getter();
+  return indexed ? defaultRows.map((r: any, i: number) => ({...r, index: i + 1})) : defaultRows;
+}
+
+/**
  * A function that sort table rows based on specified sort queries
  * 
  * @param rows An array of data

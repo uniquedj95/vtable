@@ -150,8 +150,11 @@ export const SelectInput = defineComponent({
       filteredOptions.value.forEach(option => option.isChecked = false)
     }
 
-    watch([filter, () => props.options, () => props.asyncOptions], async () => filterOptions())
-    watch(() => props.value, (v) => setDefaults())
+    watch(() => props.value, () => setDefaults())
+    watch([filter, () => props.options, () => props.asyncOptions], async () => {
+      await filterOptions();
+      setDefaults();
+    })
 
     onMounted(async () => {
       await filterOptions()

@@ -46,7 +46,7 @@ export const DataTable = defineComponent({
     }
   },
   emits: ["customFilter", "queryChange", "drilldown"],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const isLoading = ref(false);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
@@ -223,11 +223,15 @@ export const DataTable = defineComponent({
                 })
               ),
               ...props.customFilters.map(filter => {
+                if (filter.slotName && typeof slots[filter.slotName] === "function") {
+                  return h(IonCol, { size: `${filter.gridSize}` || '3' }, slots[filter.slotName]!({filter}))
+                }
                 if (filter.type === 'dateRange') {
                   return h(IonCol, { size: `${filter.gridSize}` || '6' },
                     h(DateRangePicker, {
                       range: (computed(() => filter.value || { startDate: "", endDate: "" })).value,
                       onRangeChange: async (newRange: any) => {
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(newRange);
                         customFiltersValues[filter.id] = newRange;
                       }
                     })
@@ -238,7 +242,11 @@ export const DataTable = defineComponent({
                       options: filter.options,
                       placeholder: filter.label || filter.placeholder || 'Select Item',
                       value: filter.value,
-                      onSelect: (v: Option | Option[]) => customFiltersValues[filter.id] = v
+                      multiple: filter.multiple,
+                      onSelect: (v: Option | Option[]) => {
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(v);
+                        customFiltersValues[filter.id] = v
+                      }
                     })
                   )
                 } else {
@@ -249,7 +257,9 @@ export const DataTable = defineComponent({
                       placeholder: filter.placeholder,
                       value: (computed(() => filter.value || "")).value,
                       onIonInput: async (e: Event) => {
-                        customFiltersValues[filter.id] = (e.target as HTMLInputElement).value;
+                        const value =  (e.target as HTMLInputElement).value;
+                        if(typeof filter.onUpdate === "function") filter.onUpdate(value);
+                        customFiltersValues[filter.id] = value;
                       }
                     })
                   )

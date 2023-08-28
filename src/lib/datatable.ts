@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import { buildPaginationInfo, initializeSortQueries, sortRows } from "./utils";
+import { buildPaginationInfo, initializeSortQueries, sortRows, updateSortQueries } from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -152,29 +152,6 @@ export const DataTable = defineComponent({
       filters.pagination.start = Math.max(filters.pagination.start, 1);
     };
 
-    // const initializeFilters = () => {
-    //   filters.sort = tableColumns.value
-    //     .filter(({ initialSort }) => initialSort)
-    //     .map(column => ({
-    //       column,
-    //       order: column.initialSortOrder || "asc"
-    //     }));
-    // }
-
-    const updateSortQueries = (column: TableColumnInterface) => {
-      const queryIndex = filters.sort.findIndex((s) => s.column.path === column.path);
-      if (queryIndex >= 0) {
-        filters.sort[queryIndex].order = filters.sort[queryIndex].order === 'asc'
-          ? 'desc'
-          : 'asc'
-      } else {
-        filters.sort = [{
-          column,
-          order: "asc",
-        }]
-      }
-    }
-
     const initializeRows = async () => {
       if (typeof props.asyncRows === "function") {
         isLoading.value = true;
@@ -288,7 +265,7 @@ export const DataTable = defineComponent({
           h("thead", { class: props.color || "" },
             h("tr", [
               ...tableColumns.value.map(column =>
-                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(column) },
+                h("th", { key: column.label, style: { minWidth: column.path.match(/index/i) ? '80px' : '190px' }, onClick: () => updateSortQueries(filters.sort, column) },
                   [
                     h("span", column.label),
                     column.sortable !== false && h(IonIcon, {

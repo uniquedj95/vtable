@@ -54,3 +54,17 @@ export function initializeSortQueries (columns: Array<TableColumnInterface>): Ar
     return acc;
   }, [])
 }
+
+/**
+ * Updates the array of sort queries based on a specific column.
+ *
+ * @param {Array<SortQueryInterface>} sortQueries - The current array of sort queries.
+ * @param {TableColumnInterface} column - The column for which to update the sort query.
+ * @returns {Array<SortQueryInterface>} The updated array of sort queries.
+ */
+export function updateSortQueries (sortQueries: Array<SortQueryInterface>, column: TableColumnInterface): Array<SortQueryInterface> {
+  const i = sortQueries.findIndex(q => q.column.path === column.path);
+  if (i >= 0) sortQueries[i].order = sortQueries[i].order === 'asc' ? 'desc' : 'asc';
+  else sortQueries = [{ column, order: 'asc' }]
+  return sortQueries;
+}

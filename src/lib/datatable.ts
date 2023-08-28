@@ -87,11 +87,6 @@ export const DataTable = defineComponent({
       }, {} as Record<string, any>)
     );
 
-    watch(customFiltersValues, () => props.config.showSubmitButton === false && emit("customFilter", customFiltersValues), {
-      immediate: true,
-      deep: true
-    });
-
     const paginationPages = computed(() => filters.pagination.enabled
       ? range(filters.pagination.start, filters.pagination.end + 1)
       : []
@@ -108,50 +103,6 @@ export const DataTable = defineComponent({
       ));
     }
 
-    const paginate = () => {
-      if (isEmpty(filteredRows)) return;
-      const start = (filters.pagination.page - 1) * filters.pagination.pageSize;
-      const end = start + filters.pagination.pageSize;
-      activeRows.value = filteredRows.value.slice(start, end);
-    };
-
-    const isNextPrevPageVisible = () => {
-      return (
-        paginationPages.value.includes(filters.pagination.page - 1) ||
-        filters.pagination.page === 1
-      ) && (
-          paginationPages.value.includes(filters.pagination.page + 1) ||
-          filters.pagination.page === filters.pagination.totalPages
-        )
-    }
-
-    const calculatePageRange = (force = false) => {
-      filters.pagination.totalPages = Math.ceil(totalFilteredRows.value / filters.pagination.pageSize)
-
-      if (filters.pagination.totalPages <= filters.pagination.visibleBtns) {
-        filters.pagination.start = 1
-        filters.pagination.end = filters.pagination.totalPages
-        return
-      }
-
-      if (!force && isNextPrevPageVisible()) return;
-
-      filters.pagination.start = filters.pagination.page === 1 ? 1 : filters.pagination.page - 1;
-      filters.pagination.end = filters.pagination.start + filters.pagination.visibleBtns - 5;
-
-      if (filters.pagination.start <= 3) {
-        filters.pagination.end += 3 - filters.pagination.start;
-        filters.pagination.start = 1;
-      }
-
-      if (filters.pagination.end >= filters.pagination.totalPages - 2) {
-        filters.pagination.start -= filters.pagination.end - (filters.pagination.totalPages - 2);
-        filters.pagination.end = filters.pagination.totalPages;
-      }
-
-      filters.pagination.start = Math.max(filters.pagination.start, 1);
-    };
-
     const init = async () => {
       isLoading.value = true;
       tableRows.value = await DT.getRows(props.asyncRows, props.rows, props.config?.showIndices);
@@ -163,12 +114,17 @@ export const DataTable = defineComponent({
     watch(filters, () => {
       filter();
       filteredRows.value = DT.sortRows(filteredRows.value, filters.sort)
-      paginate()
-      calculatePageRange()
+      activeRows.value = DT.paginateRows(filteredRows.value, filters.pagination)
+      DT.calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
     }, {
       immediate: true,
       deep: true
     })
+
+    watch(customFiltersValues, () => props.config.showSubmitButton === false && emit("customFilter", customFiltersValues), {
+      immediate: true,
+      deep: true
+    });
     
     watch(() => props.rows, () => init(), { deep: true, immediate: true });
     onMounted(async () => init());

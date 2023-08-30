@@ -132,7 +132,7 @@ export function paginateRows(rows: Array<any>, paginator: PaginationInterface): 
  */
 export function initializeSortQueries (columns: Array<TableColumnInterface>): Array<SortQueryInterface> {
   return columns.reduce((acc: Array<SortQueryInterface>, column: TableColumnInterface) => {
-    if(column.initialSort) acc.push({ column, order: column.initialSortOrder || "asc" });
+    if(column.initialSort) acc.push({ column, order: column.initialSortOrder ?? "asc" });
     return acc;
   }, [])
 }

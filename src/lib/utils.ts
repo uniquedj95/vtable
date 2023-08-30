@@ -6,19 +6,19 @@ import { PaginationInterface, SortQueryInterface, TableColumnInterface } from ".
 /**
  * A function that retrieves an array of rows asynchronously.
  * 
- * @returns {Promise<Array<any>>} A promise resolving to an array of rows.
+ * @returns A promise resolving to an array of rows.
  */
 type RowsGetter = () => Promise<Array<any>>;
 
 /**
  * Retrieves an array of rows either from a getter function or the provided default rows.
  *
- * @param {RowsGetter} getter - An optional function to retrieve rows asynchronously.
- * @param {Array<any>} defaultRows - An array of default rows (empty by default).
- * @param {boolean} indexed - If true, adds an 'index' property to each row.
- * @returns {Promise<Array<any>>} An array of rows.
+ * @param getter - An optional function to retrieve rows asynchronously.
+ * @param defaultRows - An array of default rows (empty by default).
+ * @param indexed - If true, adds an 'index' property to each row.
+ * @returns An array of rows.
  */
-export async function getRows(getter?: RowsGetter, defaultRows: Array<any> = [], indexed: boolean = false): Promise<Array<any>> {
+export async function getRows(getter?: RowsGetter, defaultRows = [] as Array<any>, indexed = false): Promise<Array<any>> {
   let rows = defaultRows;
   if (typeof getter === 'function') rows = await getter();
   return indexed ? rows.map((r: any, i: number) => ({...r, index: i + 1})) : rows;
@@ -66,10 +66,10 @@ export function buildPaginationInfo(paginator: PaginationInterface, totalRows: n
 /**
  * Calculates the range of visible page numbers for pagination.
  *
- * @param {PaginationInterface} paginator - The pagination settings.
- * @param {number} totalRows - The total number of rows.
- * @param {Array<number>} pages - An array of current visible page numbers.
- * @returns {PaginationInterface} The updated pagination settings.
+ * @param paginator - The pagination settings.
+ * @param totalRows - The total number of rows.
+ * @param pages - An array of current visible page numbers.
+ * @returns The updated pagination settings.
  */
 export function calculatePageRange(paginator: PaginationInterface, totalRows: number, pages: Array<number>): PaginationInterface {
   // Calculate the total number of pages
@@ -113,9 +113,9 @@ export function calculatePageRange(paginator: PaginationInterface, totalRows: nu
 /**
  * Paginates an array of rows based on the provided pagination settings.
  *
- * @param {Array<any>} rows - The array of rows to be paginated.
- * @param {PaginationInterface} paginator - The pagination settings.
- * @returns {Array<any>} The paginated array of rows.
+ * @param rows - The array of rows to be paginated.
+ * @param paginator - The pagination settings.
+ * @returns The paginated array of rows.
  */
 export function paginateRows(rows: Array<any>, paginator: PaginationInterface): Array<any> {
   if(isEmpty(rows)) return rows;
@@ -127,8 +127,8 @@ export function paginateRows(rows: Array<any>, paginator: PaginationInterface): 
 /**
  * Initializes sort queries based on column configurations.
  *
- * @param {Array<TableColumnInterface>} columns - An array of table columns.
- * @returns {Array<SortQueryInterface>} An array of initial sort queries.
+ * @param columns - An array of table columns.
+ * @returns An array of initial sort queries.
  */
 export function initializeSortQueries (columns: Array<TableColumnInterface>): Array<SortQueryInterface> {
   return columns.reduce((acc: Array<SortQueryInterface>, column: TableColumnInterface) => {
@@ -140,9 +140,9 @@ export function initializeSortQueries (columns: Array<TableColumnInterface>): Ar
 /**
  * Updates the array of sort queries based on a specific column.
  *
- * @param {Array<SortQueryInterface>} sortQueries - The current array of sort queries.
- * @param {TableColumnInterface} column - The column for which to update the sort query.
- * @returns {Array<SortQueryInterface>} The updated array of sort queries.
+ * @param sortQueries - The current array of sort queries.
+ * @param column - The column for which to update the sort query.
+ * @returns The updated array of sort queries.
  */
 export function updateSortQueries (sortQueries: Array<SortQueryInterface>, column: TableColumnInterface): Array<SortQueryInterface> {
   const i = sortQueries.findIndex(q => q.column.path === column.path);
@@ -154,9 +154,9 @@ export function updateSortQueries (sortQueries: Array<SortQueryInterface>, colum
 /**
  * Filters an array of rows based on a query string.
  *
- * @param {Array<any>} rows - The array of rows to be filtered.
- * @param {string} query - The query string for filtering.
- * @returns {Array<any>} The filtered array of rows.
+ * @param  rows - The array of rows to be filtered.
+ * @param query - The query string for filtering.
+ * @returns The filtered array of rows.
  */
 export function filterRows(rows: Array<any>, query: string): Array<any> {
   if (!query) return rows;

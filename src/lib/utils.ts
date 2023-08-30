@@ -18,7 +18,8 @@ type RowsGetter = () => Promise<Array<any>>;
  * @param indexed - If true, adds an 'index' property to each row.
  * @returns An array of rows.
  */
-export async function getRows(getter?: RowsGetter, defaultRows = [] as Array<any>, indexed = false): Promise<Array<any>> {
+export async function getRows(defaultRows: Array<any>, indexed = false, getter?: Function): Promise<Array<any>> {
+  debugger
   let rows = defaultRows;
   if (typeof getter === 'function') rows = await getter();
   return indexed ? rows.map((r: any, i: number) => ({...r, index: i + 1})) : rows;

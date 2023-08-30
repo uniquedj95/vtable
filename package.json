@@ -17,7 +17,11 @@
     "typescript",
     "Datatable"
   ],
-  "author": "Daniel Justin <danieljmuleke@gamil.com>",
+  "author": {
+    "name": "Daniel Justin",
+    "email": "danieljmuleke@gamil.com",
+    "url": "https://www.muleke.tk"
+  },
   "license": "MIT",
   "devDependencies": {
     "@ionic/vue": "^6.3.2",

@@ -98,7 +98,7 @@ export const DataTable = defineComponent({
     watch(filters, () => {
       filteredRows.value = sortRows(filterRows(tableRows.value, filters.search), filters.sort);
       activeRows.value = paginateRows(filteredRows.value, filters.pagination);
-      calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
+      filters.pagination = calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
     }, {
       immediate: true,
       deep: true

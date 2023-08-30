@@ -19,8 +19,9 @@ type RowsGetter = () => Promise<Array<any>>;
  * @returns {Promise<Array<any>>} An array of rows.
  */
 export async function getRows(getter?: RowsGetter, defaultRows: Array<any> = [], indexed: boolean = false): Promise<Array<any>> {
-  if (typeof getter === 'function') defaultRows = await getter();
-  return indexed ? defaultRows.map((r: any, i: number) => ({...r, index: i + 1})) : defaultRows;
+  let rows = defaultRows;
+  if (typeof getter === 'function') rows = await getter();
+  return indexed ? rows.map((r: any, i: number) => ({...r, index: i + 1})) : rows;
 }
 
 /**

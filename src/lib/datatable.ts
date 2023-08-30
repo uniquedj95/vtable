@@ -89,7 +89,7 @@ export const DataTable = defineComponent({
 
     const init = async () => {
       isLoading.value = true;
-      tableRows.value = await getRows(props.asyncRows, props.rows, props.config?.showIndices);
+      tableRows.value = await getRows(props.rows, props.config.showIndices || false, props.asyncRows);
       filters.sort = initializeSortQueries(tableColumns.value);
       isLoading.value = false;
     }

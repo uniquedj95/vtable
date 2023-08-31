@@ -133,7 +133,7 @@ export const DataTable = defineComponent({
       IonCol, { size: `${filter.gridSize}` || '3' }, h(
         SelectInput, {
         options: filter.options,
-        placeholder: filter.label ?? filter.placeholder ?? 'Select Item',
+        placeholder: filter.label || filter.placeholder || 'Select Item',
         value: filter.value,
         multiple: filter.multiple,
         onSelect: (v: Option | Option[]) => {
@@ -255,7 +255,7 @@ export const DataTable = defineComponent({
         onClick: btnOptions.onClick,
         color: filters.pagination.page === btnOptions.label ? 'primary' : 'light',
       },
-      btnOptions.icon ? h(IonIcon, { icon: btnOptions.icon }) : btnOptions.label ?? "Button"
+      btnOptions.icon ? h(IonIcon, { icon: btnOptions.icon }) : btnOptions.label || "Button"
     );
 
     const renderGoToPageInput = () => {
@@ -402,10 +402,10 @@ export const DataTable = defineComponent({
       return h(IonButton, {
         key: btn.icon,
         size: 'small',
-        color: btn.color ?? 'primary',
+        color: btn.color || 'primary',
         onClick: () => btn.action(row, rowIndex)
       },
-        btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label ?? "Button"
+        btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || "Button"
       );
     };
 

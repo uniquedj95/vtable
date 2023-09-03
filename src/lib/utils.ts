@@ -117,11 +117,12 @@ export function calculatePageRange(paginator: PaginationInterface, totalRows: nu
  * @param paginator - The pagination settings.
  * @returns The paginated array of rows.
  */
-export function paginateRows(rows: Array<any>, paginator: PaginationInterface): Array<any> {
+export function getActiveRows(rows: Array<any>, paginator: PaginationInterface): Array<any> {
   if(isEmpty(rows)) return rows;
-  const start = (paginator.start - 1) * paginator.pageSize;
-  const end = start + paginator.pageSize;
-  return rows.slice(start, end);
+  const { start, pageSize } = paginator;
+  const sIndex = (paginator.start - 1) * pageSize;
+  const eIndex = start + pageSize;
+  return rows.slice(sIndex, eIndex);
 }
 
 /**
@@ -159,7 +160,7 @@ export function updateSortQueries (sortQueries: Array<SortQueryInterface>, colum
  * @returns The filtered array of rows.
  */
 export function filterRows(rows: Array<any>, query: string): Array<any> {
-  if (!query) return rows;
+  if (!query || isEmpty(rows)) return rows;
   return rows.filter(row => 
     Object.values(row).some(v => 
       v && JSON.stringify(v).toLowerCase().includes(query.toLowerCase())

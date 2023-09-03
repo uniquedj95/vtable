@@ -119,10 +119,9 @@ export function calculatePageRange(paginator: PaginationInterface, totalRows: nu
  */
 export function getActiveRows(rows: Array<any>, paginator: PaginationInterface): Array<any> {
   if(isEmpty(rows)) return rows;
-  const { start, pageSize } = paginator;
-  const sIndex = (paginator.start - 1) * pageSize;
-  const eIndex = start + pageSize;
-  return rows.slice(sIndex, eIndex);
+  const { page, pageSize } = paginator;
+  const start = (page - 1) * pageSize;
+  return rows.slice(start, start + pageSize);
 }
 
 /**

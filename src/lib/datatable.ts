@@ -126,7 +126,7 @@ export const DataTable = defineComponent({
             placeholder: 'Search here...',
             class: 'box ion-no-padding',
             value: filters.search,
-            onIonChange: (e) => handleFilters(filters.pagination, e.target.value as string),
+            onIonChange: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
           })
         ]);
       }

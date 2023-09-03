@@ -35,7 +35,7 @@ export function sortRows(rows: any[], query: SortQueryInterface[]) {
   if (isEmpty(query)) return rows;
   const orders = query.map(({ order }) => order);
   return orderBy(
-    rows,
+    rows.slice(),
     query.map(({ column }) => (row) => {
       let value = get(row, column.path);
       if (!value || isEmpty(value)) return ""
@@ -161,7 +161,7 @@ export function updateSortQueries (sortQueries: Array<SortQueryInterface>, colum
  */
 export function filterRows(rows: Array<any>, query: string): Array<any> {
   if (!query || isEmpty(rows)) return rows;
-  return rows.filter(row => 
+  return rows.slice().filter(row => 
     Object.values(row).some(v => 
       v && JSON.stringify(v).toLowerCase().includes(query.toLowerCase())
     )

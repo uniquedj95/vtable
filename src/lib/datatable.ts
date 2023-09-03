@@ -1,5 +1,5 @@
 import { computed, defineComponent, h, onMounted, PropType, reactive, ref, watch } from "vue";
-import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TextFieldTypes, PaginationButton } from "./types";
+import { TableColumnInterface, TableFilterInterface, ActionButtonInterface, RowActionButtonInterface, CustomFilterInterface, TableConfigInterface, Option, TextFieldTypes, PaginationButton, PaginationInterface } from "./types";
 import './datatable.css'
 import get from 'lodash/get';
 import isEmpty from "lodash/isEmpty";
@@ -8,7 +8,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonInput, IonItem, IonLabel, IonRo
 import { arrowDown, arrowUp, swapVertical, caretBack, caretForward } from "ionicons/icons";
 import { SelectInput } from "./select";
 import { DateRangePicker } from "./date-picker";
-import { buildPaginationInfo, calculatePageRange, filterRows, getRows, initializeSortQueries, paginateRows, sortRows, updateSortQueries } from "./utils";
+import * as DT from "./utils";
 
 export const DataTable = defineComponent({
   name: "DataTable",
@@ -50,15 +50,15 @@ export const DataTable = defineComponent({
     const isLoading = ref(false);
     const tableRows = ref<any[]>([]);
     const filteredRows = ref<any[]>([]);
-    const activeRows = ref<any[]>([])
     const totalFilteredRows = computed(() => filteredRows.value.length);
     const totalColumns = computed(() => isEmpty(props.rowActionsButtons) ? tableColumns.value.length : tableColumns.value.length + 1);
     const paginationPages = computed(() => filters.pagination.enabled ? range(filters.pagination.start, filters.pagination.end + 1) : []);
     const tableColumns = computed<TableColumnInterface[]>(() => props.config.showIndices
-      ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc" }, ...props.columns]
-      : props.columns
+    ? [{ path: "index", label: "#", initialSort: true, initialSortOrder: "asc" }, ...props.columns]
+    : props.columns
     );
-
+    
+    
     const filters = reactive<TableFilterInterface>({
       search: "",
       sort: [],
@@ -73,11 +73,13 @@ export const DataTable = defineComponent({
         pageSizeOptions: [5, 10, 20, 50, 100]
       }
     });
-
-    const showFilterSection = computed<boolean>(() => props.config.showSearchField !== false ||
-      props.customFilters.length > 0 ||
-      props.actionsButtons.length > 0
-    )
+    
+    const activeRows = ref([] as Array<any>);
+    const showFilterSection = computed<boolean>(() => {
+      return props.config.showSearchField !== false ||
+        props.customFilters.length > 0 ||
+        props.actionsButtons.length > 0
+    })
 
     const customFiltersValues = reactive<Record<string, any>>(
       props.customFilters.reduce((acc, filter) => {
@@ -89,28 +91,33 @@ export const DataTable = defineComponent({
 
     const init = async () => {
       isLoading.value = true;
-      tableRows.value = await getRows(props.rows, props.config.showIndices || false, props.asyncRows);
-      filters.sort = initializeSortQueries(tableColumns.value);
+      tableRows.value = await DT.getRows(props.rows, props.config.showIndices || false, props.asyncRows);
+      filters.sort = DT.initializeSortQueries(tableColumns.value);
+      handleFilters(filters.pagination);
       isLoading.value = false;
     }
 
+    const handleFilters = (paginator: PaginationInterface, search?: string, sortColumn?: TableColumnInterface) => {
+      if(search) filters.search = search;
+      if(sortColumn) filters.sort = DT.updateSortQueries(filters.sort, sortColumn);
+      const _filteredRows = DT.filterRows(tableRows.value, filters.search);
+      filteredRows.value = DT.sortRows(_filteredRows, filters.sort);
+      filters.pagination = DT.calculatePageRange(paginator, totalFilteredRows.value, paginationPages.value);
+      activeRows.value = DT.getActiveRows(filteredRows.value, filters.pagination);
+    }
 
-    watch(filters, () => {
-      filteredRows.value = sortRows(filterRows(tableRows.value, filters.search), filters.sort);
-      activeRows.value = paginateRows(filteredRows.value, filters.pagination);
-      filters.pagination = calculatePageRange(filters.pagination, totalFilteredRows.value, paginationPages.value);
-    }, {
-      immediate: true,
-      deep: true
-    });
-
-    watch(customFiltersValues, () => props.config.showSubmitButton === false && emit("customFilter", customFiltersValues), {
+    watch(customFiltersValues, () => {
+      if (props.config.showSubmitButton === false) {
+        emit("customFilter", customFiltersValues)
+      }
+    }, 
+    {
       immediate: true,
       deep: true
     });
 
     watch(() => props.rows, () => init(), { deep: true, immediate: true });
-    onMounted(async () => init());
+    onMounted(() => init());
 
     const renderSearchbar = () => {
       if (props.config.showSearchField !== false && !isEmpty(tableRows.value)) {
@@ -119,10 +126,7 @@ export const DataTable = defineComponent({
             placeholder: 'Search here...',
             class: 'box ion-no-padding',
             value: filters.search,
-            onIonChange: (e: Event) => {
-              filters.search = (e.target as HTMLInputElement).value;
-              filters.pagination.page = 1;
-            }
+            onIonChange: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
           })
         ]);
       }
@@ -237,26 +241,55 @@ export const DataTable = defineComponent({
       );
     };
 
-    const renderPaginationControls = () => [
-      renderPageControlButton({ icon: caretBack, disabled: filters.pagination.page === filters.pagination.start, onClick: () => filters.pagination.page-- }),
-      filters.pagination.start > 3 && renderPageControlButton({ label: '1', onClick: () => filters.pagination.page = 1 }),
-      filters.pagination.start > 3 && renderPageControlButton({ label: '...', disabled: true }),
-      ...paginationPages.value.map(label => renderPageControlButton({ label, onClick: () => filters.pagination.page = label })),
-      filters.pagination.end < (filters.pagination.totalPages - 2) && renderPageControlButton({ label: '...', disabled: true }),
-      filters.pagination.end < (filters.pagination.totalPages - 2) && renderPageControlButton({ label: filters.pagination.totalPages, onClick: () => filters.pagination.page = filters.pagination.totalPages }),
-      renderPageControlButton({ icon: caretForward, disabled: filters.pagination.page === filters.pagination.end || isEmpty(filteredRows.value), onClick: () => filters.pagination.page++ })
-    ];
+    const renderPaginationControls = () => {
+      const {page, start, end, totalPages } = filters.pagination;
+      const handleClick = (page: number) => {
+        return handleFilters({...filters.pagination, page })
+      };
 
-    const renderPageControlButton = (btnOptions: PaginationButton) => h(
-      IonButton,
-      {
-        size: 'small',
-        disabled: btnOptions.disabled,
-        onClick: btnOptions.onClick,
-        color: filters.pagination.page === btnOptions.label ? 'primary' : 'light',
-      },
-      btnOptions.icon ? h(IonIcon, { icon: btnOptions.icon }) : btnOptions.label || "Button"
-    );
+      const controls = [
+        renderPageControlButton({
+          icon: caretBack, 
+          disabled: page === start, 
+          onClick: () => handleClick(page - 1)
+        }),
+      ];
+
+      if (start > 3) {
+        controls.push(renderPageControlButton({ label: '1', onClick: () => handleClick(1)}))
+        controls.push(renderPageControlButton({ label: '...', disabled: true }))
+      }
+
+      paginationPages.value.forEach(label => {
+        controls.push(renderPageControlButton({ label, onClick: () => handleClick(label)}))
+      })
+
+      if (end < totalPages - 2) {
+        controls.push(renderPageControlButton({ label: '...', disabled: true }));
+        controls.push(renderPageControlButton({ label: totalPages, onClick: () => handleClick(totalPages) }));
+      }
+      
+      controls.push(renderPageControlButton({ 
+        icon: caretForward, 
+        disabled: page === end || isEmpty(filteredRows.value), 
+        onClick: () => handleClick(page + 1) 
+      }))
+
+      return controls
+    };
+
+    const renderPageControlButton = ({ disabled, label, icon, onClick }: PaginationButton) => {
+      return h(
+        IonButton,
+        {
+          onClick,
+          disabled,
+          size: 'small',
+          color: filters.pagination.page === label ? 'primary' : 'light',
+        },
+        icon ? h(IonIcon, { icon }) : label || "Button"
+      );
+    }
 
     const renderGoToPageInput = () => {
       return h(IonItem, { class: "box go-to-input", lines: "none" }, [
@@ -271,7 +304,7 @@ export const DataTable = defineComponent({
           onIonChange: (e) => {
             const page = e.target.value as number;
             if (page > 0 && page <= filters.pagination.totalPages) {
-              filters.pagination.page = page;
+              handleFilters({...filters.pagination, page });
             }
           }
         }),
@@ -283,10 +316,11 @@ export const DataTable = defineComponent({
         h(IonLabel, "Items per page"),
         h(IonSelect, {
           value: filters.pagination.pageSize,
-          onIonChange: (e) => {
-            filters.pagination.pageSize = e.target.value as number;
-            filters.pagination.page = 1;
-          }
+          onIonChange: (e) => handleFilters({
+            ...filters.pagination, 
+            pageSize: e.target.value as number, 
+            page: 1
+          }),
         }, [
           ...filters.pagination.pageSizeOptions.map(value => h(IonSelectOption, { value, key: value }, value)),
           h(IonSelectOption, { value: totalFilteredRows.value }, "All")
@@ -296,7 +330,7 @@ export const DataTable = defineComponent({
 
     const renderPaginationInfo = () => {
       return h(IonCol, { size: '4', class: "pagination-info" }, (computed(() => {
-        return buildPaginationInfo(filters.pagination, totalFilteredRows.value);
+        return DT.buildPaginationInfo(filters.pagination, totalFilteredRows.value);
       })).value);
     };
 
@@ -321,7 +355,7 @@ export const DataTable = defineComponent({
 
     const renderTableHeaderCell = (column: TableColumnInterface) => {
       const style = { minWidth: /index/i.test(column.path) ? '80px' : '190px' };
-      const onClick = () => filters.sort = updateSortQueries(filters.sort, column);
+      const onClick = () => handleFilters(filters.pagination, filters.search, column);
       return h("th", { key: column.label, style, onClick }, [
         h("span", column.label),
         column.sortable !== false && renderSortIcon(column),

@@ -100,10 +100,15 @@ export const DataTable = defineComponent({
     const handleFilters = (paginator: PaginationInterface, search?: string, sortColumn?: TableColumnInterface) => {
       if(search) filters.search = search;
       if(sortColumn) filters.sort = DT.updateSortQueries(filters.sort, sortColumn);
+      console.log("Current filters", filters);
       const _filteredRows = DT.filterRows(tableRows.value, filters.search);
+      console.log("Filters rows", _filteredRows);
       filteredRows.value = DT.sortRows(_filteredRows, filters.sort);
+      console.log("Sorted Rows", filteredRows.value);
       filters.pagination = DT.calculatePageRange(paginator, totalFilteredRows.value, paginationPages.value);
+      console.log("Updated filters", filters);
       activeRows.value = DT.getActiveRows(filteredRows.value, filters.pagination);
+      console.log("Active rows", activeRows.value);
     }
 
     watch(customFiltersValues, () => {

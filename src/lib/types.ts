@@ -79,6 +79,7 @@ export interface TableConfigInterface {
   showSubmitButton?: boolean;
   showSearchField?: boolean;
   showIndices?: boolean;
+  pagination?: Partial<PaginationInterface>
 }
 
 export interface TableGlobalConfig {

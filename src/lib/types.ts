@@ -18,6 +18,10 @@ export interface TableColumnInterface {
   drillable?: boolean;
   preSort?: (value: any) => any;
   formatter?: (value: any, row: any) => any;
+  thStyles?: Record<string, string>;
+  thClasses?: Array<string>;
+  tdStyles?: Record<string, string>;
+  tdClasses?: Array<string>;
 }
 
 export interface SortQueryInterface {

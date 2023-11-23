@@ -358,9 +358,9 @@ export const DataTable = defineComponent({
     }
 
     const renderTableHeaderCell = (column: TableColumnInterface) => {
-      const style = { minWidth: /index/i.test(column.path) ? '80px' : '190px' };
+      const style = { minWidth: /index/i.test(column.path) ? '80px' : '190px', ...column.thStyles };
       const onClick = () => handleFilters(filters.pagination, filters.search, column);
-      return h("th", { key: column.label, style, onClick }, [
+      return h("th", { key: column.label, style, class: column.thClasses?.join(" "), onClick }, [
         h("span", column.label),
         column.sortable !== false && renderSortIcon(column),
       ]);
@@ -407,9 +407,10 @@ export const DataTable = defineComponent({
 
 
     const renderDataRowCells = (row: any) => {
-      return tableColumns.value.map((column, key) =>
-        h('td', { key, class: "data-cell" }, renderCellContent(row, column))
-      );
+      return tableColumns.value.map((column, key) => {
+        const classes = ["data-cell", ...column.tdClasses ?? []].join(" ");
+        return h('td', { key, class: classes, style: column.tdStyles }, renderCellContent(row, column))
+      });
     };
 
     const renderCellContent = (row: any, column: TableColumnInterface) => {

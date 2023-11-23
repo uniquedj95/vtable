@@ -1,6 +1,6 @@
 {
   "name": "@uniquedj95/vtable",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "An advanced datatable for Ionic vue 3 framework",
   "main": "dist/index.js",
   "files": [

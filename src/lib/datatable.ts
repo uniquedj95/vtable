@@ -63,14 +63,14 @@ export const DataTable = defineComponent({
       search: "",
       sort: [],
       pagination: {
-        enabled: true,
-        page: 1,
-        pageSize: 10,
-        start: 1,
-        end: 1,
-        totalPages: 1,
-        visibleBtns: 7,
-        pageSizeOptions: [5, 10, 20, 50, 100]
+        enabled: props.config?.pagination?.enabled ?? true,
+        page: props.config?.pagination?.page ?? 1,
+        pageSize: props.config?.pagination?.pageSize ?? 10,
+        start: props.config?.pagination?.start ?? 1,
+        end: props.config?.pagination?.end ?? 1,
+        totalPages: props.config?.pagination?.totalPages ?? 1,
+        visibleBtns: props.config?.pagination?.visibleBtns ?? 7,
+        pageSizeOptions: props.config?.pagination?.pageSizeOptions ?? [5, 10, 20, 50, 100]
       }
     });
     
@@ -102,8 +102,12 @@ export const DataTable = defineComponent({
       if(sortColumn) filters.sort = DT.updateSortQueries(filters.sort, sortColumn);
       const _filteredRows = DT.filterRows(tableRows.value, filters.search);
       filteredRows.value = DT.sortRows(_filteredRows, filters.sort);
-      filters.pagination = DT.calculatePageRange(paginator, totalFilteredRows.value, paginationPages.value);
-      activeRows.value = DT.getActiveRows(filteredRows.value, filters.pagination);
+      if(filters.pagination.enabled) {
+        filters.pagination = DT.calculatePageRange(paginator, totalFilteredRows.value, paginationPages.value);
+        activeRows.value = DT.getActiveRows(filteredRows.value, filters.pagination);
+      } else {
+        activeRows.value = filteredRows.value
+      }
     }
 
     watch(customFiltersValues, () => {
@@ -229,7 +233,7 @@ export const DataTable = defineComponent({
     };
 
     const renderPagination = () => {
-      return h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
+      return filters.pagination.enabled && h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
         h(IonRow, [
           h(IonCol, { size: '4' }, renderPaginationControls()),
           h(IonCol, { size: '4', class: "text-center" }, [

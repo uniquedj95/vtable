@@ -43,6 +43,10 @@ export const DataTable = defineComponent({
     config: {
       type: Object as PropType<TableConfigInterface>,
       default: () => ({})
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["customFilter", "queryChange", "drilldown"],
@@ -367,7 +371,7 @@ export const DataTable = defineComponent({
     };
 
     const renderTableBody = () => {
-      return h("tbody", { class: "table-body" }, isLoading.value
+      return h("tbody", { class: "table-body" }, isLoading.value || props.loading
         ? renderLoadingRows()
         : isEmpty(filteredRows.value)
           ? renderNoDataRow()

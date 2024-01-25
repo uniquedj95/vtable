@@ -128,7 +128,7 @@ export const DataTable = defineComponent({
     onMounted(() => init());
 
     const renderSearchbar = () => {
-      if (props.config.showSearchField !== false && !isEmpty(tableRows.value)) {
+      if (props.config.showSearchField !== false) {
         return h(IonCol, { size: '3', class: "ion-margin-bottom" }, [
           h(IonSearchbar, {
             placeholder: 'Search here...',

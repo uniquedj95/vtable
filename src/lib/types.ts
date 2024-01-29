@@ -30,6 +30,8 @@ export interface SortQueryInterface {
 }
 
 export type sortType = "asc" | "desc" | "none";
+export type ButtonSize = "small" | "large" | "default"
+
 
 export interface PaginationInterface {
   enabled: boolean;
@@ -52,12 +54,14 @@ export interface ActionButtonInterface {
   icon?: string;
   action: (activeRows: any[], allRows: any[], filters: TableFilterInterface, columns: TableColumnInterface[]) => any;
   color?: string;
+  size?: ButtonSize
 }
 
 export interface RowActionButtonInterface {
   label?: string;
   icon?: string;
   action: (row: any, index: number) => any;
+  size?: ButtonSize
   color?: string;
   default?: boolean;
   condition?: (row: any) => boolean;

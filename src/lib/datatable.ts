@@ -129,11 +129,12 @@ export const DataTable = defineComponent({
 
     const renderSearchbar = () => {
       if (props.config.showSearchField !== false) {
-        return h(IonCol, { size: '3', class: "ion-margin-bottom" }, [
+        return h(IonCol, { size: '4', class: "ion-margin-bottom" }, [
           h(IonSearchbar, {
             placeholder: 'Search here...',
             class: 'box ion-no-padding',
             value: filters.search,
+            style: {height: '44px'},
             onIonChange: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
           })
         ]);
@@ -210,19 +211,18 @@ export const DataTable = defineComponent({
         {
           class: 'ion-float-right',
           color: btn.color || 'primary',
+          size: btn.size ?? "default",
           onClick: () => btn.action(activeRows.value, tableRows.value, filters, tableColumns.value)
         },
-        [
-          btn.label,
-          btn.icon && h('span', { style: { color: 'white', paddingLeft: '5px', paddingRight: '5px' } }, ' | '),
-          btn.icon && h(IonIcon, { icon: btn.icon }),
-        ]
+        btn.icon 
+          ? h(IonIcon, { icon: btn.icon })
+          : btn.label,
       ));
     };
 
 
     const renderFilterSection = () => {
-      return showFilterSection.value && h(IonGrid, { class: "ion-padding-vertical", style: { width: '100%', fontWeight: 500 } },
+      return showFilterSection.value && h(IonGrid, { style: { width: '100%', fontWeight: 500 } },
         h(IonRow, [
           h(IonCol, { size: '7' },
             h(IonRow, [
@@ -444,7 +444,7 @@ export const DataTable = defineComponent({
     const renderRowActionButton = (row: any, rowIndex: number, btn: RowActionButtonInterface) => {
       return h(IonButton, {
         key: btn.icon,
-        size: 'small',
+        size: btn.size ?? 'small',
         color: btn.color || 'primary',
         onClick: () => btn.action(row, rowIndex)
       },

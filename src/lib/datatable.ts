@@ -131,11 +131,11 @@ export const DataTable = defineComponent({
       if (props.config.showSearchField !== false) {
         return h(IonCol, { size: '4', class: "ion-margin-bottom" }, [
           h(IonSearchbar, {
-            placeholder: 'Search here...',
+            placeholder: 'search here...',
             class: 'box ion-no-padding',
             value: filters.search,
-            style: {height: '44px'},
-            onIonChange: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
+            debounce: 500,
+            onIonInput: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
           })
         ]);
       }

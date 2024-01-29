@@ -158,7 +158,6 @@ input[type="search"]::-webkit-search-cancel-button {
   border-style: solid;
   border-radius: 3px;
   font-size: large;
-  height: 44px;
 }
 
 .pagination-info {
@@ -233,7 +232,6 @@ input[type="search"]::-webkit-search-cancel-button {
 }
   
 .search-input {
-  height: 2.5rem;
   width: 100%;
   display: inline-block;
 }

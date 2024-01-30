@@ -129,7 +129,7 @@ export const DataTable = defineComponent({
 
     const renderSearchbar = () => {
       if (props.config.showSearchField !== false) {
-        return h(IonCol, { size: '4', class: "ion-margin-bottom" }, [
+        return h(IonCol, { size: '4' }, [
           h(IonSearchbar, {
             placeholder: 'search here...',
             class: 'box ion-no-padding',
@@ -197,8 +197,8 @@ export const DataTable = defineComponent({
 
     const renderSubmitButton = () => {
       if (props.customFilters.length > 0 && props.config.showSubmitButton !== false) {
-        return h(IonCol, { size: '2', class: "ion-margin-bottom" }, [
-          h(IonButton, { color: "primary", onClick: () => emit("customFilter", customFiltersValues) }, 'Submit')
+        return h(IonCol, { size: '2' }, [
+          h(IonButton, { color: "primary", class: "ion-no-margin", onClick: () => emit("customFilter", customFiltersValues) }, 'Submit')
         ]);
       }
       return null;

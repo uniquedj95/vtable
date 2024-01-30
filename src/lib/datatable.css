@@ -157,7 +157,6 @@ input[type="search"]::-webkit-search-cancel-button {
   border-width: thin;
   border-style: solid;
   border-radius: 3px;
-  font-size: large;
   height: 40px;
 }
 

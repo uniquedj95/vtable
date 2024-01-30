@@ -113,8 +113,8 @@
   margin-bottom: 2px !important;
 }
 
-.searchbar-search-icon .sc-ion-searchbar-md {
-  top: 8px !important;
+.searchbar-input-container ion-icon {
+  top: 0px !important;
 }
 
 .searchbar-input-container .sc-ion-searchbar-md {

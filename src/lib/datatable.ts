@@ -236,14 +236,14 @@ export const DataTable = defineComponent({
     };
 
     const renderPagination = () => {
-      return filters.pagination.enabled && h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
+      return filters.pagination.enabled && filters.pagination.totalPages > 1 && h(IonGrid, { style: { width: '100%', textAlign: 'left', color: 'black' }, class: 'ion-padding' },
         h(IonRow, [
           h(IonCol, { size: '4' }, renderPaginationControls()),
-          h(IonCol, { size: '4', class: "text-center" }, [
+          h(IonCol, { size: '5', class: "text-center" }, [
             renderGoToPageInput(),
             renderItemsPerPageSelect()
           ]),
-          h(IonCol, { size: '4' }, renderPaginationInfo())
+          h(IonCol, { size: '3' }, renderPaginationInfo())
         ])
       );
     };

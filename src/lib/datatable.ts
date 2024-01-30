@@ -134,7 +134,6 @@ export const DataTable = defineComponent({
             placeholder: 'search here...',
             class: 'box ion-no-padding',
             value: filters.search,
-            debounce: 500,
             onIonInput: (e) => handleFilters({...filters.pagination, page: 1}, e.target.value as string),
           })
         ]);

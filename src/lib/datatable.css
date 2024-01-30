@@ -103,6 +103,22 @@
 
 .sc-ion-searchbar-md-h {
   --box-shadow: none !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.searchbar-input .sc-ion-searchbar-md {
+  margin: 0 !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+}
+
+.searchbar-search-icon .sc-ion-searchbar-md {
+  top: 8px !important;
+}
+
+.searchbar-input-container .sc-ion-searchbar-md {
+  height: 36px !important;
 }
 
 .outer-input-box {

@@ -182,6 +182,7 @@ export const SelectInput = defineComponent({
               disabled: props.disabled, 
               placeholder: showPlaceholder.value ? props.placeholder : '',
               class: "search-input",
+              style: { minWidth: "20px" },
               value: filter.value,
               onIonInput: (e: Event) => filter.value = (e.target as HTMLInputElement).value
             })

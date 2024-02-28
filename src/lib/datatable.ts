@@ -129,7 +129,7 @@ export const DataTable = defineComponent({
 
     const renderSearchbar = () => {
       if (props.config.showSearchField !== false) {
-        return h(IonCol, { size: '4' }, [
+        return h(IonCol, { size: '3' }, [
           h(IonSearchbar, {
             placeholder: 'search here...',
             class: 'box ion-no-padding',
@@ -157,7 +157,7 @@ export const DataTable = defineComponent({
     );
 
     const renderDateRangeFilter = (filter: CustomFilterInterface) => h(
-      IonCol, { size: `${filter.gridSize}` || '6' }, h(
+      IonCol, { size: `${filter.gridSize}` || '5' }, h(
         DateRangePicker, {
         range: (computed(() => filter.value || { startDate: "", endDate: "" })).value,
         onRangeChange: async (newRange) => {
@@ -169,7 +169,7 @@ export const DataTable = defineComponent({
     );
 
     const renderDefaultFilter = (filter: CustomFilterInterface) => h(
-      IonCol, { size: '4' }, h(
+      IonCol, { size: '3' }, h(
         IonInput, {
         class: 'box',
         type: filter.type as TextFieldTypes,
@@ -223,14 +223,14 @@ export const DataTable = defineComponent({
     const renderFilterSection = () => {
       return showFilterSection.value && h(IonGrid, { style: { width: '100%', fontWeight: 500 } },
         h(IonRow, [
-          h(IonCol, { size: '7' },
+          h(IonCol, { size: '8' },
             h(IonRow, [
               renderSearchbar(),
               ...renderCustomFilters(),
               renderSubmitButton(),
             ])
           ),
-          h(IonCol, { size: '5', class: "ion-padding-end" }, renderActionsButtons())
+          h(IonCol, { size: '4', class: "ion-padding-end" }, renderActionsButtons())
         ])
       );
     };

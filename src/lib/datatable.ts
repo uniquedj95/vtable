@@ -102,7 +102,7 @@ export const DataTable = defineComponent({
     }
 
     const handleFilters = (paginator: PaginationInterface, search?: string, sortColumn?: TableColumnInterface) => {
-      if(search) filters.search = search;
+      filters.search = search ?? "";
       if(sortColumn) filters.sort = DT.updateSortQueries(filters.sort, sortColumn);
       const _filteredRows = DT.filterRows(tableRows.value, filters.search);
       filteredRows.value = DT.sortRows(_filteredRows, filters.sort);

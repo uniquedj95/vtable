@@ -299,7 +299,7 @@ export const DataTable = defineComponent({
     }
 
     const renderGoToPageInput = () => {
-      return h(IonItem, { class: "box go-to-input", lines: "none" }, [
+      return h(IonItem, { class: "box go-to-input ion-hide-xl-down", lines: "none" }, [
         h(IonLabel, { class: 'ion-margin-end' }, "Go to page"),
         h(IonInput, {
           type: "number",

@@ -419,7 +419,7 @@ export const DataTable = defineComponent({
     const renderCellContent = (row: any, column: TableColumnInterface) => {
       let value = get(row, column.path);
       if (typeof column.formatter === 'function' && value) value = column.formatter(value, row);
-      if (column.drillable && !isEmpty(value)) {
+      if (DT.isDrillable(column, value, row)) {
         return h('a', { onClick: () => emit("drilldown", { column, row }) }, renderCellValue(value));
       } else {
         return renderCellValue(value);

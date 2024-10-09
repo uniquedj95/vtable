@@ -166,3 +166,17 @@ export function filterRows(rows: Array<any>, query: string): Array<any> {
     )
   );
 }
+
+/**
+ * Determines if a table column is drillable based on the provided column configuration, value, and row.
+ *
+ * @param column - The table column configuration object.
+ * @param value - The value in the table cell.
+ * @param row - The entire row data.
+ * @returns A boolean indicating whether the column is drillable.
+ */
+export function isDrillable(column: TableColumnInterface, value: any, row: any): boolean {
+  return typeof column.drillable === 'function' 
+    ? column.drillable(value, row) 
+    : !!column.drillable && !isEmpty(value)
+}

@@ -15,7 +15,7 @@ export interface TableColumnInterface {
   sortable?: boolean;
   initialSortOrder?: sortType;
   sortCaseSensitive?: boolean;
-  drillable?: boolean;
+  drillable?: boolean | ((value: any, row: any) => boolean);
   preSort?: (value: any) => any;
   formatter?: (value: any, row: any) => any;
   thStyles?: Record<string, string>;

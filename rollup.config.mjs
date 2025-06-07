@@ -49,6 +49,7 @@ export default async function config(args) {
         'ionicons/icons'
       ],
       plugins: [
+        css({ output: "lib/datatable.css" }),
         vue(),
         typescript({
           tsconfigOverride: {

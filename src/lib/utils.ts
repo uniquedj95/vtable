@@ -107,7 +107,7 @@ export function sortRows(rows: any[], query: SortQueryInterface[]): any[] {
   const orders = query.map(({ order }) => order);
   const iteratees = query.map(({ column }) => (row: any) => {
     let value = get(row, column.path);
-    if (!value || isEmpty(value)) return ""
+    if (isEmpty(value)) return ""
     if (typeof column.preSort === "function") value = column.preSort(value);
     if (typeof value === "number" || column.sortCaseSensitive) return value;
     return value.toString().toLowerCase();

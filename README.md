@@ -1,6 +1,6 @@
 # vTable
 
-An advanced Data table for Ionic Vue framework.
+An advanced data table component for the Ionic Vue framework, offering powerful features for data display, manipulation, and interaction.
 
 <p>
   <a href="https://sonarcloud.io/summary/new_code?id=uniquedj95_vtable"><img src="https://sonarcloud.io/api/project_badges/measure?project=uniquedj95_vtable&metric=alert_status" /></a>
@@ -12,25 +12,28 @@ An advanced Data table for Ionic Vue framework.
 
 ![Example Table](screenshort.png "Example Table")
 
+---
+
 ## Installation
+
+Install via npm or yarn:
 
 ```bash
 npm install @uniquedj95/vtable
-
-OR
-
+# OR
 yarn add @uniquedj95/vtable
 ```
 
+---
+
 ## Usage
 
-Register datatable globally
+### Register vTable Globally
 
 ```typescript
 // src/main.ts
 import { VTable } from "@uniquedj95/vtable"
-
-// import datatable css
+// Import datatable CSS
 import '@uniquedj95/vtable/dist/lib/datatable.css'
 
 const app = createApp(App)
@@ -43,29 +46,29 @@ router.isReady().then(() => {
 });
 ```
 
-```HTML
-// Example.vue
+```html
+<!-- Example.vue -->
 <template>
   <data-table :rows="rows" :columns="columns"></data-table>
 </template>
 ```
 
-Register datatable locally
+### Register vTable Locally
 
 ```html
 <script lang="ts">
-  import { DataTable } from "@uniquedj95/vtable"
-  import { defineComponent } from "vue"
+import { DataTable } from "@uniquedj95/vtable"
+import { defineComponent } from "vue"
 
-  export default defineComponent({
-    data: () => ({
-      rows: [],
-      columns: []
-    })
-    components: {
-      DataTable
-    }
-  })
+export default defineComponent({
+  data: () => ({
+    rows: [],
+    columns: []
+  }),
+  components: {
+    DataTable
+  }
+})
 </script>
 
 <template>
@@ -73,118 +76,218 @@ Register datatable locally
 </template>
 ```
 
-Note: that you need to manually import styles from `@uniquedj95/vtable/dist/lib/datatable.css`
+> **Note:** You must manually import styles from `@uniquedj95/vtable/dist/lib/datatable.css`.
+
+---
 
 ## API Reference
 
-#### 1. Props
+### 1. Props
 
-| Prop Name    | Default Value   | Description    |
-|--------------|-----------------|----------------|
-| rows | [ ] | List of data that is mapped into table rows |
-| asyncRows | undefined | A promise function that return list of data |
-| columns | [ ] | List of table columns definitions | 
-| actionButtons | [ ] | list of buttons that are used to perform global table actions |
-| rowActionButtons | [ ] | list of buttons that are used to perform actions that affect a specific row |
-| customFilters | [ ] | list of custom filters that affects the source of data |
-| color | undefined | color themes that is applied to the datatable. The following are accepted colors: `primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"` |
-| config | undefined | configuration that affects how the datatable functions |
+| Prop Name         | Default Value | Description                                                                 |
+|-------------------|--------------|-----------------------------------------------------------------------------|
+| rows              | [ ]          | List of data objects mapped into table rows                                  |
+| asyncRows         | undefined    | A promise function that returns a list of data                               |
+| columns           | [ ]          | List of table column definitions                                             |
+| actionButtons     | [ ]          | List of buttons for global table actions                                     |
+| rowActionButtons  | [ ]          | List of buttons for actions affecting specific rows                          |
+| customFilters     | [ ]          | List of custom filters affecting the data source                             |
+| color             | undefined    | Color theme for the datatable. Accepted: `primary`, `secondary`, etc.       |
+| config            | undefined    | Configuration object affecting datatable behavior                            |
 
+#### 1.1 Table Column
 
-1.1 Table Column
+A table column is defined with the following properties:
 
-A table column has the following proprties
+| Property Name      | Required | Description                                                                 |
+|--------------------|----------|-----------------------------------------------------------------------------|
+| label              | Yes      | The column heading text (e.g. `First Name`)                                 |
+| path               | Yes      | The key used to map row data to this column (e.g. `first_name`)             |
+| exportable         | No       | If true, values in this column can be exported (default: `true`)            |
+| initialSort        | No       | If true, this column is used for initial sorting (default: `false`)          |
+| sortable           | No       | If true, this column can be sorted (default: `true`)                        |
+| initialSortOrder   | No       | Initial sort order: `"asc" | "desc" | "none"` (requires `initialSort`)      |
+| sortCaseSensitive  | No       | If true, sorting is case sensitive (default: `false`)                       |
+| drillable          | No       | If true, column data can be drilled (default: `false`)                      |
+| preSort            | No       | Function to process values before sorting                                    |
+| formatter          | No       | Function to format values for display                                        |
 
-| Property Name | Required | Description |
-|---------------|----------|-------------|
-| label | Yes | The string on the table column headings e.g. `First Name` |
-| path | Yes | The path that is used to map rows and columns e.g. `first_name` |
-| exportable | No | Specifies if values on that column can be exported to external files such as CSV. The default value is `true` |
-| initialSort | No | Specifies if the column be used for initial data sorting. Default value is `false` |
-| sortable | No | Specifies if the column can be used for sorting data at anytime. Default value is `true` |
-| initialSortOrder | No | Specifies the initial sort order for this column. This works only when the `initialSort` is set to true. The following are acceptable orders: `"asc" | "desc" | "none"` |
-| sortCaseSensitive | No | Specifies if the comparison for values in that column is case sensitive when sorting. The default value is `false` |
-| drillable | No | Specifies if the column data can be drilled. A drillable column must receive an array value which is passed to the onDrilldown function handler. The array length value is used to display on the drillable columns. the default value is `false` |
-| preSort | No | A function that takes each column value and return processed value that is used when sorting |
-| formatter | No | A function that takes column values and return formated values that are displayed on the table |
+#### 1.2 Action Button
 
+Action buttons are displayed above the table and affect the entire table. Each action button has the following properties:
 
-1.2 Action Button
+| Property Name | Required | Type     | Description                                                                 |
+|---------------|----------|----------|-----------------------------------------------------------------------------|
+| label         | Yes      | String   | Button label (e.g. `Submit`)                                                |
+| icon          | No       | ionicons | Icon displayed with the label, separated by `|`                             |
+| color         | No       | String   | Button color (default: `primary`)                                           |
+| action        | Yes      | Function | Click handler. Receives `activeRows`, `allRows`, `filters`, and `columns`   |
 
-These are top buttons whose actions affects the whole table. An Action Button has the following properties
+#### 1.3 Row Action Button
 
-| Property Name | Required | Type | Description |
-|---------------|----------|------|-------------|
-| label | Yes | String | used as button label e.g `submit` |
-| icon | No | ionicons | Rendered together with the `label` separated by `|`|
-| color | No | String | Specifies the color of the button. Default is `primary` |
-| action | Yes | function | A listener function to button clicks. It receives `activeRows, allRows, filters and columns`
+Row action buttons are attached to each row for row-specific actions. Each button has the following properties:
 
+| Property Name | Required | Type     | Description                                                                 |
+|---------------|----------|----------|-----------------------------------------------------------------------------|
+| label         | No       | String   | Button label. If both label and icon are missing, defaults to `"Button"`    |
+| icon          | No       | ionicon  | Icon string. If both label and icon are defined, icon is used               |
+| color         | No       | String   | Button color (default: `primary`)                                           |
+| default       | No       | Boolean  | If true, button listens to whole row clicks (default: `false`)              |
+| condition     | No       | Function | Returns boolean to show/hide the button (default: `() => true`)             |
+| action        | Yes      | Function | Click handler. Receives row data and its index                              |
 
-1.3 Row Action Button
+#### 1.4 Custom Filter
 
-These are buttons that are attached to each row for specific row actions. The button has the following properties
+Custom filters are used when fetching data from the source/API. Each filter has the following properties:
 
-| Property Name | Required | Type | Description |
-|---------------|----------|------|-------------|
-| label | No | string | used as button label. If both label and icon are not defined, `"Button"` will be used as a button label |
-|icon | No | ionicon | An ionicon string that is used as a button label. If both label and icon are defined, icon will be used |
-| color | No | String | Specifies the color of the button. Default is `primary` |
-| default | No | Boolean | Specifies if the button listens to the whole row clicks. default is `false` |
-| condition | No | Function | A function that returns boolean which is used to determine whether to show or hide the button. Default is `() => true` | 
-| action | Yes | Function | A listener function to button clicks. It receives row data and its index |
+| Property Name | Required | Type     | Description                                                                 |
+|---------------|----------|----------|-----------------------------------------------------------------------------|
+| id            | Yes      | String   | Unique identifier for the filter                                            |
+| label         | No       | String   | Filter input label                                                          |
+| value         | No       | any      | Default value for the filter                                                |
+| gridSize      | No       | Number   | Column grid size (1-12)                                                     |
+| type          | Yes      | String   | Filter input type: `"text" | "number" | "date" | "select" | "dateRange"`     |
+| options       | No       | Array    | Options for select input filters                                             |
+| placeholder   | No       | String   | Placeholder text when no value is set                                       |
+| required      | No       | Boolean  | If true, filter must be set before emitting events                          |
+| multiple      | No       | Boolean  | For `select` type: allows multiple selection                                |
+| onUpdate      | No       | Function | Callback when filter value changes                                          |
+| slotName      | No       | String   | Used for defining named slots for advanced filters                          |
 
+##### 1.4.1 Filter Option
 
-1.4 Custom Filter
+A filter option object has the following properties:
 
-The are filters that are used when fetching data from the source/API. A custom filter has the following properties
+| Property Name | Required | Type             | Description                                         |
+|---------------|----------|------------------|-----------------------------------------------------|
+| label         | Yes      | String           | Option label                                        |
+| value         | Yes      | String/Number    | Option value                                        |
+| isChecked     | No       | Boolean          | If true, option is selected (for checkboxes/radios) |
+| other         | No       | any              | Any additional data                                 |
 
-| Property Name | Required | Type | Description |
-|---------------|----------|------|-------------|
-| id | Yes | String | A unique id used to identify the filter |
-| label | No | String | A filter input label |
-| value | No | any | Default value parsed to the filter |
-| gridSize | No | Number | Specifies the column grid size of the filter. It accepts numbers between 1 and 12 |
-| type | Yes | String | Specifies the type of the filter input field. Accepted values are : `"text" | "number" | "date" | "select" | "dateRange"` |
-| options| No | Array | List of options required for select input filters |
-| placeholder | No | String | A placeholder string used on the filter when no value is set |
-| required | No | Boolean | Specifies if the filter is required to be set before before emitting filter events |
-| multiple | No | Boolean | Requires type to be set to `select`. Specifies whether to select multiple items or not |
-| onUpdate | No | Function | A callback function that is called whenever filter value changes |
-| slotName | No | String | used in defining named slots for advanced filters |
+#### 1.5 Table Config
 
-1.4.1 Filter Option
+General configuration options for the datatable:
 
-A filter option is an object that has the following properties
+| Property Name        | Required | Type    | Default | Description                                                                 |
+|---------------------|----------|---------|---------|-----------------------------------------------------------------------------|
+| showSubmitButton    | No       | Boolean | false   | Show/hide submit button for custom filters. If enabled, filter changes are not emitted until submit is pressed. |
+| showSearchField     | No       | Boolean | true    | Show/hide the search input field. If disabled, search is hidden even if data is available. |
+| showIndices         | No       | Boolean | false   | Show/hide index numbers column                                              |
 
-| Property Name | Required | Type | Description |
-|---------------|----------|------|-------------|
-| label | Yes | String | A label that is rendered on the screen |
-| value | Yes | String `|` Number | The value of the option |
-| isCheked | No | Boolean | Specifies whether the option is selected. Mostly used with checkboxes, or radio buttons.|
-| other | No | any | Any other data that needs to be passed as part of the option |
+---
 
+### 2. Events
 
-1.5 Table Config
+The data table emits the following events:
 
-These are general configuration that affects how the datatable functions. The config has the following properties
+| Event Name     | Description                                                                 |
+|----------------|-----------------------------------------------------------------------------|
+| customFilter   | Emitted when the submit button is clicked and all required filters are set. If `showSubmitButton` is false, emitted whenever a filter changes. |
+| drilldown      | Emitted when a drillable cell is clicked                                    |
 
-| Property name | Required | type | Default | Description |
-|---------------|----------|------|---------|-------------|
-| showSubmitButton | No | Boolean | false | Specifies whether to show/hide the submit buttom for custom filters. When enabled, filter changes does not immediately emit filter events till the submit button is pressed. |
-| showSearchField | No | Boolean | true | Specifies whether to show or hide the search input field. When disabled, the search field will be completely hidden even when the data is available |
-| showIndices | No | Boolean | false | Specifies whether to show index numbers column |
-
-
-#### 2. Events
-
-The following events are emitted by the data table
-
-| Event Name | Description |
-|------------|-------------|
-| customFilter | Emitted when submit button is clicked and all the required filters are set. If showSubmitButton is false, the event is emitted whenever a filter changes |
-| drilldown | Emitted when a drillable cell is clicked |
+---
 
 ## Examples
 
+### Basic Usage
+
+```vue
+<template>
+  <data-table :rows="rows" :columns="columns" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const rows = ref([
+  { id: 1, name: 'Alice', age: 30 },
+  { id: 2, name: 'Bob', age: 25 },
+]);
+
+const columns = ref([
+  { label: 'ID', path: 'id' },
+  { label: 'Name', path: 'name' },
+  { label: 'Age', path: 'age', sortable: true },
+]);
+</script>
+```
+
+### With Action Buttons
+
+```vue
+<template>
+  <data-table :rows="rows" :columns="columns" :actionButtons="actionButtons" />
+</template>
+
+<script setup lang="ts">
+const actionButtons = [
+  {
+    label: 'Export',
+    icon: 'download-outline',
+    color: 'secondary',
+    action: (activeRows, allRows) => {
+      // Export logic here
+      alert(`Exporting ${activeRows.length} rows`);
+    },
+  },
+];
+</script>
+```
+
+### With Row Action Buttons
+
+```vue
+<template>
+  <data-table :rows="rows" :columns="columns" :rowActionButtons="rowButtons" />
+</template>
+
+<script setup lang="ts">
+const rowButtons = [
+  {
+    icon: 'trash-outline',
+    color: 'danger',
+    action: (row, index) => {
+      // Delete logic here
+      alert(`Delete row ${index + 1}`);
+    },
+  },
+];
+</script>
+```
+
+### With Custom Filters
+
+```vue
+<template>
+  <data-table :rows="rows" :columns="columns" :customFilters="filters" @customFilter="onFilter" />
+</template>
+
+<script setup lang="ts">
+const filters = [
+  {
+    id: 'name',
+    label: 'Name',
+    type: 'text',
+    placeholder: 'Search by name',
+  },
+];
+
+function onFilter(filterValues) {
+  // Handle filter changes
+  console.log(filterValues);
+}
+</script>
+```
+
+---
+
 ## Contribution
+
+Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features.
+
+---
+
+## License
+
+[MIT](LICENSE)

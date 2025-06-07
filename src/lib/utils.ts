@@ -1,7 +1,45 @@
-import get from "lodash/get";
-import isEmpty from "lodash/isEmpty";
-import orderBy from "lodash/orderBy";
 import { PaginationInterface, SortQueryInterface, TableColumnInterface } from "./types";
+
+/**
+ * Safely gets the value at path of object.
+ * 
+ * @param obj - The object to query.
+ * @param path - The path of the property to get.
+ * @returns The resolved value.
+ */
+export function get(obj: any, path: string): any {
+  if (obj == null) return undefined;
+  
+  // Handle both dot notation and array indexing
+  const pathArray = path.replace(/\[(\w+)\]/g, '.$1').split('.');
+  let result = obj;
+  
+  for (const key of pathArray) {
+    if (result == null) return undefined;
+    result = result[key];
+  }
+  
+  return result;
+}
+
+/**
+ * Checks if value is an empty object, collection, or string.
+ * @param value - The value to check.
+ * @returns Returns true if value is empty, else false.
+ */
+export function isEmpty(value: any): boolean {
+  if (value == null) return true;
+  
+  if (typeof value === 'string' || Array.isArray(value)) {
+    return value.length === 0;
+  }
+  
+  if (typeof value === 'object') {
+    return Object.keys(value).length === 0;
+  }
+  
+  return false;
+}
 
 /**
  * A function that retrieves an array of rows asynchronously.
@@ -25,26 +63,57 @@ export async function getRows(defaultRows: Array<any>, indexed = false, getter?:
 }
 
 /**
+ * Creates an array of elements, sorted in ascending/descending order by the results of running
+ * each element through each iteratee.
+ * @param collection - The collection to iterate over.
+ * @param iteratees - The iteratees to sort by.
+ * @param orders - The sort orders of iteratees.
+ * @returns Returns the new sorted array.
+ */
+export function orderBy(collection: any[], iteratees: ((item: any) => any)[], orders: string[]): any[] {
+  if (!Array.isArray(collection)) return [];
+  if (collection.length <= 1) return [...collection];
+  
+  return [...collection].sort((a, b) => {
+    for (let i = 0; i < iteratees.length; i++) {
+      const iteratee = iteratees[i];
+      const order = orders[i];
+      
+      const valueA = iteratee(a);
+      const valueB = iteratee(b);
+      
+      if (valueA === valueB) continue;
+      
+      if (order === 'asc') {
+        return valueA < valueB ? -1 : 1;
+      } else {
+        return valueA > valueB ? -1 : 1;
+      }
+    }
+    
+    return 0;
+  });
+}
+
+/**
  * A function that sort table rows based on specified sort queries
  * 
  * @param rows An array of data
  * @param query an array of sort queries
  * @returns sorted array
  */
-export function sortRows(rows: any[], query: SortQueryInterface[]) {
+export function sortRows(rows: any[], query: SortQueryInterface[]): any[] {
   if (isEmpty(query)) return rows;
   const orders = query.map(({ order }) => order);
-  return orderBy(
-    rows.slice(),
-    query.map(({ column }) => (row) => {
-      let value = get(row, column.path);
-      if (!value || isEmpty(value)) return ""
-      if (typeof column.preSort === "function") value = column.preSort(value);
-      if (typeof value === "number" || column.sortCaseSensitive) return value;
-      return value.toString().toLowerCase();
-    }),
-    orders as any
-  );
+  const iteratees = query.map(({ column }) => (row: any) => {
+    let value = get(row, column.path);
+    if (!value || isEmpty(value)) return ""
+    if (typeof column.preSort === "function") value = column.preSort(value);
+    if (typeof value === "number" || column.sortCaseSensitive) return value;
+    return value.toString().toLowerCase();
+  });
+  
+  return orderBy(rows.slice(), iteratees, orders);
 };
 
 /**
@@ -179,4 +248,19 @@ export function isDrillable(column: TableColumnInterface, value: any, row: any):
   return typeof column.drillable === 'function' 
     ? column.drillable(value, row) 
     : !!column.drillable && !isEmpty(value)
+}
+
+/**
+ * Creates an array of numbers progressing from start up to, but not including, end.
+ * 
+ * @param start - The start of the range.
+ * @param end - The end of the range.
+ * @returns An array of numbers.
+ */
+export function range(start: number, end: number): number[] {
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+  return result;
 }

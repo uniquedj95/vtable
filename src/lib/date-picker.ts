@@ -18,15 +18,15 @@ export const DateRangePicker =  defineComponent({
     watch(cRange, (v) => emit("rangeChange", v))
     return () => 
       h(IonGrid, { class: 'ion-no-padding ion-no-margin'}, 
-        h(IonRow, [
+        () => h(IonRow, [
           h(IonCol, { size: "6"}, 
-            h(IonInput, { type: 'date', class: 'box-input', value: start.value, onIonInput: (e: Event) => start.value = (e.target as HTMLInputElement).value, style: { width: "100%"}})
+            () => h(IonInput, { type: 'date', class: 'box-input', value: start.value, onIonInput: (e: Event) => start.value = (e.target as HTMLInputElement).value, style: { width: "100%"}})
           ),
           h(IonCol, { size: '1', style: {display: "flex", justifyContent: "center "}},
-            h(IonIcon, { icon: arrowForward, style: { fontSize: '24px', padding: '.5rem'}})
+            () => h(IonIcon, { icon: arrowForward, style: { fontSize: '24px', padding: '.5rem'}})
           ),
           h(IonCol, { size: "5"}, 
-            h(IonInput, { type: 'date', class: 'box-input', value: end.value, onIonInput: (e: Event) => end.value = (e.target as HTMLInputElement).value, style: { width: "100%"}})
+            () => h(IonInput, { type: 'date', class: 'box-input', value: end.value, onIonInput: (e: Event) => end.value = (e.target as HTMLInputElement).value, style: { width: "100%"}})
           ),
         ])
       );

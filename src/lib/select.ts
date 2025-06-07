@@ -2,7 +2,7 @@ import { IonCheckbox, IonChip, IonIcon, IonInput, IonItem, IonLabel, IonList, Io
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, PropType, ref, watch } from "vue";
 import { Option } from "./types"
 import { chevronDown, chevronUp, close, closeCircle } from "ionicons/icons"
-import { isEmpty } from "lodash";
+import { isEmpty } from "./utils";
 
 export const SelectInput = defineComponent({
   name: "SelectInput",

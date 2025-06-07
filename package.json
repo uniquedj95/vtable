@@ -3,13 +3,26 @@
   "version": "1.9.1",
   "description": "An advanced datatable for Ionic vue framework",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./dist/lib/datatable.css": {
+      "default": "./dist/lib/datatable.css"
+    }
+  },
   "files": [
     "dist/**/**"
   ],
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "keywords": [
     "Vue",
@@ -20,25 +33,26 @@
   "author": {
     "name": "Daniel Justin",
     "email": "danieljmuleke@gamil.com",
-    "url": "https://www.muleke.tk"
+    "url": "https://github.com/uniquedj95"
   },
   "license": "MIT",
   "devDependencies": {
     "@ionic/vue": "^6.3.2",
-    "@types/lodash": "^4.14.186",
+    "@testing-library/vue": "^8.1.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/ui": "^3.2.2",
     "ionicons": "^6.0.3",
+    "jsdom": "^26.1.0",
     "rollup": "^4.18.0",
     "rollup-plugin-clear": "^2.0.7",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "rollup-plugin-vue": "^6.0.0",
     "typescript": "^4.8.4",
+    "vitest": "^3.2.2",
     "vue": "^3.0.0"
   },
   "peerDependencies": {
     "vue": "^3.0.0"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21"
   }
 }

@@ -4,27 +4,61 @@ import clear from 'rollup-plugin-clear';
 import css from 'rollup-plugin-css-only';
 
 export default async function config(args) {
-  return {
-    input: 'src/index.ts',
-    output: {
-      dir: 'dist',
-      format: 'cjs',
-      sourcemap: true,
-    },
-    plugins: [
-      vue(),
-      typescript({
-        tsconfigOverride: {
-          compilerOptions: {
-            declaration: true,
+  return [
+    {
+      input: 'src/index.ts',
+      output: {
+        dir: 'dist',
+        format: 'cjs',
+        sourcemap: true,
+        entryFileNames: '[name].js',
+      },
+      external: [
+        'vue',
+        '@ionic/vue',
+        'ionicons/icons'
+      ],
+      plugins: [
+        clear({
+          targets: ['./dist'],
+        }),
+        css({ output: "lib/datatable.css" }),
+        vue(),
+        typescript({
+          tsconfigOverride: {
+            compilerOptions: {
+              declaration: true,
+            },
+            include: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+            exclude: ["**/*.css"]
           },
-          include: null,
-        },
-      }),
-      css({ output: "lib/datatable.css" }),
-      clear({
-        targets: ['./dist'],
-      })
-    ],
-  };
+        }),
+      ],
+    },
+    {
+      input: 'src/index.ts',
+      output: {
+        dir: 'dist',
+        format: 'esm',
+        sourcemap: true,
+        entryFileNames: '[name].mjs',
+      },
+      external: [
+        'vue',
+        '@ionic/vue',
+        'ionicons/icons'
+      ],
+      plugins: [
+        css({ output: "lib/datatable.css" }),
+        vue(),
+        typescript({
+          tsconfigOverride: {
+            declaration: false,
+            include: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+            exclude: ["**/*.css"]
+          },
+        }),
+      ],
+    }
+  ];
 }

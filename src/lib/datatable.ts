@@ -7,7 +7,7 @@ import {
   reactive,
   ref,
   watch,
-} from "vue";
+} from 'vue';
 import {
   TableColumnInterface,
   TableFilterInterface,
@@ -19,8 +19,8 @@ import {
   TextFieldTypes,
   PaginationButton,
   PaginationInterface,
-} from "./types";
-import "./datatable.css";
+} from './types';
+import './datatable.css';
 import {
   IonButton,
   IonCol,
@@ -34,21 +34,21 @@ import {
   IonSelect,
   IonSelectOption,
   IonSkeletonText,
-} from "@ionic/vue";
+} from '@ionic/vue';
 import {
   arrowDown,
   arrowUp,
   swapVertical,
   caretBack,
   caretForward,
-} from "ionicons/icons";
-import { SelectInput } from "./select";
-import { DateRangePicker } from "./date-picker";
-import * as DT from "./utils";
-import { get, isEmpty, range } from "./utils";
+} from 'ionicons/icons';
+import { SelectInput } from './select';
+import { DateRangePicker } from './date-picker';
+import * as DT from './utils';
+import { get, isEmpty, range } from './utils';
 
 export const DataTable = defineComponent({
-  name: "DataTable",
+  name: 'DataTable',
   props: {
     rows: {
       type: Array as PropType<any[]>,
@@ -76,16 +76,16 @@ export const DataTable = defineComponent({
     },
     color: {
       type: String as PropType<
-        | "primary"
-        | "secondary"
-        | "tertiary"
-        | "success"
-        | "warning"
-        | "danger"
-        | "light"
-        | "dark"
-        | "medium"
-        | "custom"
+        | 'primary'
+        | 'secondary'
+        | 'tertiary'
+        | 'success'
+        | 'warning'
+        | 'danger'
+        | 'light'
+        | 'dark'
+        | 'medium'
+        | 'custom'
       >,
     },
     config: {
@@ -97,7 +97,7 @@ export const DataTable = defineComponent({
       default: false,
     },
   },
-  emits: ["customFilter", "queryChange", "drilldown"],
+  emits: ['customFilter', 'queryChange', 'drilldown'],
   setup(props, { emit, slots }) {
     const isLoading = ref(false);
     const tableRows = ref<any[]>([]);
@@ -117,10 +117,10 @@ export const DataTable = defineComponent({
       props.config.showIndices
         ? [
             {
-              path: "index",
-              label: "#",
+              path: 'index',
+              label: '#',
               initialSort: true,
-              initialSortOrder: "asc",
+              initialSortOrder: 'asc',
             },
             ...props.columns,
           ]
@@ -128,7 +128,7 @@ export const DataTable = defineComponent({
     );
 
     const filters = reactive<TableFilterInterface>({
-      search: "",
+      search: '',
       sort: [],
       pagination: {
         enabled: props.config?.pagination?.enabled ?? true,
@@ -154,10 +154,13 @@ export const DataTable = defineComponent({
     });
 
     const customFiltersValues = reactive<Record<string, any>>(
-      props.customFilters.reduce((acc, filter) => {
-        acc[filter.id] = filter.value;
-        return acc;
-      }, {} as Record<string, any>)
+      props.customFilters.reduce(
+        (acc, filter) => {
+          acc[filter.id] = filter.value;
+          return acc;
+        },
+        {} as Record<string, any>
+      )
     );
 
     const init = async () => {
@@ -177,7 +180,7 @@ export const DataTable = defineComponent({
       search?: string,
       sortColumn?: TableColumnInterface
     ) => {
-      filters.search = search ?? "";
+      filters.search = search ?? '';
       if (sortColumn)
         filters.sort = DT.updateSortQueries(filters.sort, sortColumn);
       const _filteredRows = DT.filterRows(tableRows.value, filters.search);
@@ -201,7 +204,7 @@ export const DataTable = defineComponent({
       customFiltersValues,
       () => {
         if (props.config.showSubmitButton === false) {
-          emit("customFilter", customFiltersValues);
+          emit('customFilter', customFiltersValues);
         }
       },
       {
@@ -219,12 +222,12 @@ export const DataTable = defineComponent({
 
     const renderSearchbar = () => {
       if (props.config.showSearchField !== false) {
-        return h(IonCol, { size: "4" }, () => [
+        return h(IonCol, { size: '4' }, () => [
           h(IonSearchbar, {
-            placeholder: "search here...",
-            class: "box ion-no-padding",
+            placeholder: 'search here...',
+            class: 'box ion-no-padding',
             value: filters.search,
-            onIonInput: (e) =>
+            onIonInput: e =>
               handleFilters(
                 { ...filters.pagination, page: 1 },
                 e.target.value as string
@@ -236,30 +239,26 @@ export const DataTable = defineComponent({
     };
 
     const renderSelectFilter = (filter: CustomFilterInterface) =>
-      h(
-        IonCol,
-        { size: `${filter.gridSize}` || "3" },
-        () => h(SelectInput, {
+      h(IonCol, { size: `${filter.gridSize}` || '3' }, () =>
+        h(SelectInput, {
           options: filter.options,
-          placeholder: filter.label || filter.placeholder || "Select Item",
+          placeholder: filter.label || filter.placeholder || 'Select Item',
           value: filter.value,
           multiple: filter.multiple,
           onSelect: (v: Option | Option[]) => {
-            if (typeof filter.onUpdate === "function") filter.onUpdate(v);
+            if (typeof filter.onUpdate === 'function') filter.onUpdate(v);
             customFiltersValues[filter.id] = v;
           },
         })
       );
 
     const renderDateRangeFilter = (filter: CustomFilterInterface) =>
-      h(
-        IonCol,
-        { size: `${filter.gridSize}` || "6" },
-        () => h(DateRangePicker, {
-          range: computed(() => filter.value || { startDate: "", endDate: "" })
+      h(IonCol, { size: `${filter.gridSize}` || '6' }, () =>
+        h(DateRangePicker, {
+          range: computed(() => filter.value || { startDate: '', endDate: '' })
             .value,
-          onRangeChange: async (newRange) => {
-            if (typeof filter.onUpdate === "function")
+          onRangeChange: async newRange => {
+            if (typeof filter.onUpdate === 'function')
               filter.onUpdate(newRange);
             customFiltersValues[filter.id] = newRange;
           },
@@ -267,34 +266,32 @@ export const DataTable = defineComponent({
       );
 
     const renderDefaultFilter = (filter: CustomFilterInterface) =>
-      h(
-        IonCol,
-        { size: "4" },
-        () => h(IonInput, {
-          class: "box",
+      h(IonCol, { size: '4' }, () =>
+        h(IonInput, {
+          class: 'box',
           type: filter.type as TextFieldTypes,
           placeholder: filter.placeholder,
-          value: computed(() => filter.value || "").value,
-          onIonInput: async (e) => {
+          value: computed(() => filter.value || '').value,
+          onIonInput: async e => {
             const value = e.target.value;
-            if (typeof filter.onUpdate === "function") filter.onUpdate(value);
+            if (typeof filter.onUpdate === 'function') filter.onUpdate(value);
             customFiltersValues[filter.id] = value;
           },
         })
       );
 
     const renderCustomFilters = () => {
-      return props.customFilters.map((filter) => {
+      return props.customFilters.map(filter => {
         if (filter.slotName && slots[filter.slotName]) {
           const slotFn = slots[filter.slotName];
           return h(
             IonCol,
-            { size: `${filter.gridSize || "3"}` },
+            { size: `${filter.gridSize || '3'}` },
             () => slotFn && slotFn({ filter })
           );
         }
-        if (filter.type === "dateRange") return renderDateRangeFilter(filter);
-        if (filter.type === "select") return renderSelectFilter(filter);
+        if (filter.type === 'dateRange') return renderDateRangeFilter(filter);
+        if (filter.type === 'select') return renderSelectFilter(filter);
         return renderDefaultFilter(filter);
       });
     };
@@ -304,15 +301,15 @@ export const DataTable = defineComponent({
         props.customFilters.length > 0 &&
         props.config.showSubmitButton !== false
       ) {
-        return h(IonCol, { size: "2" }, () => [
+        return h(IonCol, { size: '2' }, () => [
           h(
             IonButton,
             {
-              color: "primary",
-              class: "ion-no-margin",
-              onClick: () => emit("customFilter", customFiltersValues),
+              color: 'primary',
+              class: 'ion-no-margin',
+              onClick: () => emit('customFilter', customFiltersValues),
             },
-            "Submit"
+            'Submit'
           ),
         ]);
       }
@@ -320,13 +317,13 @@ export const DataTable = defineComponent({
     };
 
     const renderActionsButtons = () => {
-      return props.actionsButtons.map((btn) =>
+      return props.actionsButtons.map(btn =>
         h(
           IonButton,
           {
-            class: "ion-float-right",
-            color: btn.color || "primary",
-            size: btn.size ?? "default",
+            class: 'ion-float-right',
+            color: btn.color || 'primary',
+            size: btn.size ?? 'default',
             onClick: () =>
               btn.action(
                 activeRows.value,
@@ -343,23 +340,17 @@ export const DataTable = defineComponent({
     const renderFilterSection = () => {
       return (
         showFilterSection.value &&
-        h(
-          IonGrid,
-          { style: { width: "100%", fontWeight: 500 } },
-          () => h(IonRow, [
-            h(
-              IonCol,
-              { size: "7" },
-              () => h(IonRow, [
+        h(IonGrid, { style: { width: '100%', fontWeight: 500 } }, () =>
+          h(IonRow, [
+            h(IonCol, { size: '7' }, () =>
+              h(IonRow, [
                 renderSearchbar(),
                 ...renderCustomFilters(),
                 renderSubmitButton(),
               ])
             ),
-            h(
-              IonCol,
-              { size: "5", class: "ion-padding-end" },
-              () => renderActionsButtons()
+            h(IonCol, { size: '5', class: 'ion-padding-end' }, () =>
+              renderActionsButtons()
             ),
           ])
         )
@@ -373,17 +364,18 @@ export const DataTable = defineComponent({
         h(
           IonGrid,
           {
-            style: { width: "100%", textAlign: "left", color: "black" },
-            class: "ion-padding",
+            style: { width: '100%', textAlign: 'left', color: 'black' },
+            class: 'ion-padding',
           },
-          () => h(IonRow, [
-            h(IonCol, { size: "4" }, () => renderPaginationControls()),
-            h(IonCol, { size: "5", class: "text-center" }, () => [
-              renderGoToPageInput(),
-              renderItemsPerPageSelect(),
-            ]),
-            h(IonCol, { size: "3" }, () => renderPaginationInfo()),
-          ])
+          () =>
+            h(IonRow, [
+              h(IonCol, { size: '4' }, () => renderPaginationControls()),
+              h(IonCol, { size: '5', class: 'text-center' }, () => [
+                renderGoToPageInput(),
+                renderItemsPerPageSelect(),
+              ]),
+              h(IonCol, { size: '3' }, () => renderPaginationInfo()),
+            ])
         )
       );
     };
@@ -404,10 +396,10 @@ export const DataTable = defineComponent({
 
       if (start > 3) {
         controls.push(
-          renderPageControlButton({ label: "1", onClick: () => handleClick(1) })
+          renderPageControlButton({ label: '1', onClick: () => handleClick(1) })
         );
         controls.push(
-          renderPageControlButton({ label: "...", disabled: true })
+          renderPageControlButton({ label: '...', disabled: true })
         );
       }
 
@@ -419,7 +411,7 @@ export const DataTable = defineComponent({
 
       if (end < totalPages - 2) {
         controls.push(
-          renderPageControlButton({ label: "...", disabled: true })
+          renderPageControlButton({ label: '...', disabled: true })
         );
         controls.push(
           renderPageControlButton({
@@ -451,27 +443,27 @@ export const DataTable = defineComponent({
         {
           onClick,
           disabled,
-          size: "small",
-          color: filters.pagination.page === label ? "primary" : "light",
+          size: 'small',
+          color: filters.pagination.page === label ? 'primary' : 'light',
         },
-        icon ? h(IonIcon, { icon }) : label || "Button"
+        icon ? h(IonIcon, { icon }) : label || 'Button'
       );
     };
 
     const renderGoToPageInput = () => {
       return h(
         IonItem,
-        { class: "box go-to-input ion-hide-xl-down", lines: "none" },
+        { class: 'box go-to-input ion-hide-xl-down', lines: 'none' },
         [
-          h(IonLabel, { class: "ion-margin-end" }, "Go to page"),
+          h(IonLabel, { class: 'ion-margin-end' }, 'Go to page'),
           h(IonInput, {
-            type: "number",
+            type: 'number',
             min: 1,
             max: filters.pagination.totalPages,
             value: filters.pagination.page,
-            style: { paddingRight: "15px" },
+            style: { paddingRight: '15px' },
             debounce: 500,
-            onIonChange: (e) => {
+            onIonChange: e => {
               const page = e.target.value as number;
               if (page > 0 && page <= filters.pagination.totalPages) {
                 handleFilters({ ...filters.pagination, page });
@@ -483,13 +475,13 @@ export const DataTable = defineComponent({
     };
 
     const renderItemsPerPageSelect = () => {
-      return h(IonItem, { class: "box per-page-input", lines: "none" }, [
-        h(IonLabel, "Items per page"),
+      return h(IonItem, { class: 'box per-page-input', lines: 'none' }, [
+        h(IonLabel, 'Items per page'),
         h(
           IonSelect,
           {
             value: filters.pagination.pageSize,
-            onIonChange: (e) =>
+            onIonChange: e =>
               handleFilters({
                 ...filters.pagination,
                 pageSize: e.target.value as number,
@@ -497,10 +489,10 @@ export const DataTable = defineComponent({
               }),
           },
           [
-            ...filters.pagination.pageSizeOptions.map((value) =>
+            ...filters.pagination.pageSizeOptions.map(value =>
               h(IonSelectOption, { value, key: value }, value)
             ),
-            h(IonSelectOption, { value: totalFilteredRows.value }, "All"),
+            h(IonSelectOption, { value: totalFilteredRows.value }, 'All'),
           ]
         ),
       ]);
@@ -509,7 +501,7 @@ export const DataTable = defineComponent({
     const renderPaginationInfo = () => {
       return h(
         IonCol,
-        { size: "4", class: "pagination-info" },
+        { size: '4', class: 'pagination-info' },
         computed(() => {
           return DT.buildPaginationInfo(
             filters.pagination,
@@ -521,44 +513,44 @@ export const DataTable = defineComponent({
 
     const renderTableHeader = () =>
       h(
-        "thead",
-        { class: props.color || "" },
-        h("tr", [
-          ...tableColumns.value.map((column) => renderTableHeaderCell(column)),
-          !isEmpty(props.rowActionsButtons) && h("th", "Actions"),
+        'thead',
+        { class: props.color || '' },
+        h('tr', [
+          ...tableColumns.value.map(column => renderTableHeaderCell(column)),
+          !isEmpty(props.rowActionsButtons) && h('th', 'Actions'),
         ])
       );
 
     const renderSortIcon = (column: TableColumnInterface) => {
-      const style = { marginRight: "5px", float: "right", cursor: "pointer" };
+      const style = { marginRight: '5px', float: 'right', cursor: 'pointer' };
       const icon = computed(() => {
-        const query = filters.sort.find((s) => s.column.path === column.path);
+        const query = filters.sort.find(s => s.column.path === column.path);
         return !query
           ? swapVertical
-          : query.order == "asc"
-          ? arrowUp
-          : arrowDown;
+          : query.order == 'asc'
+            ? arrowUp
+            : arrowDown;
       });
       return h(IonIcon, { icon: icon.value, style });
     };
 
     const renderTableHeaderCell = (column: TableColumnInterface) => {
       const style = {
-        minWidth: /index/i.test(column.path) ? "80px" : "190px",
+        minWidth: /index/i.test(column.path) ? '80px' : '190px',
         ...column.thStyles,
       };
       const onClick = () =>
         handleFilters(filters.pagination, filters.search, column);
       return h(
-        "th",
+        'th',
         {
           key: column.label,
           style,
-          class: column.thClasses?.join(" "),
+          class: column.thClasses?.join(' '),
           onClick,
         },
         [
-          h("span", column.label),
+          h('span', column.label),
           column.sortable !== false && renderSortIcon(column),
         ]
       );
@@ -566,25 +558,25 @@ export const DataTable = defineComponent({
 
     const renderTableBody = () => {
       return h(
-        "tbody",
-        { class: "table-body" },
+        'tbody',
+        { class: 'table-body' },
         isLoading.value || props.loading
           ? renderLoadingRows()
           : isEmpty(filteredRows.value)
-          ? renderNoDataRow()
-          : renderDataRows()
+            ? renderNoDataRow()
+            : renderDataRows()
       );
     };
 
     const renderLoadingRows = () => {
       return range(0, 9).map((i: number) =>
         h(
-          "tr",
+          'tr',
           { key: i },
           h(
-            "td",
+            'td',
             { colspan: totalColumns.value },
-            h(IonSkeletonText, { animated: true, style: { width: "100%" } })
+            h(IonSkeletonText, { animated: true, style: { width: '100%' } })
           )
         )
       );
@@ -592,25 +584,23 @@ export const DataTable = defineComponent({
 
     const renderNoDataRow = () => {
       return h(
-        "tr",
+        'tr',
         h(
-          "td",
+          'td',
           { colspan: totalColumns.value },
-          h("div", { class: "no-data-table" }, "No data available")
+          h('div', { class: 'no-data-table' }, 'No data available')
         )
       );
     };
 
     const handleRowClick = async (row: any, rowIndex: number) => {
-      const defaultActionBtn = props.rowActionsButtons.find(
-        (btn) => btn.default
-      );
+      const defaultActionBtn = props.rowActionsButtons.find(btn => btn.default);
       if (defaultActionBtn) await defaultActionBtn.action(row, rowIndex);
     };
 
     const renderDataRows = () => {
       return activeRows.value.map((row, rowIndex) =>
-        h("tr", { key: row, onClick: () => handleRowClick(row, rowIndex) }, [
+        h('tr', { key: row, onClick: () => handleRowClick(row, rowIndex) }, [
           ...renderDataRowCells(row),
           renderRowActionCells(row, rowIndex),
         ])
@@ -619,9 +609,9 @@ export const DataTable = defineComponent({
 
     const renderDataRowCells = (row: any) => {
       return tableColumns.value.map((column, key) => {
-        const classes = ["data-cell", ...(column.tdClasses ?? [])].join(" ");
+        const classes = ['data-cell', ...(column.tdClasses ?? [])].join(' ');
         return h(
-          "td",
+          'td',
           { key, class: classes, style: column.tdStyles },
           renderCellContent(row, column)
         );
@@ -630,12 +620,12 @@ export const DataTable = defineComponent({
 
     const renderCellContent = (row: any, column: TableColumnInterface) => {
       let value = get(row, column.path);
-      if (typeof column.formatter === "function" && value)
+      if (typeof column.formatter === 'function' && value)
         value = column.formatter(value, row);
       if (DT.isDrillable(column, value, row)) {
         return h(
-          "a",
-          { onClick: () => emit("drilldown", { column, row }) },
+          'a',
+          { onClick: () => emit('drilldown', { column, row }) },
           renderCellValue(value)
         );
       } else {
@@ -650,10 +640,10 @@ export const DataTable = defineComponent({
     const renderRowActionCells = (row: any, rowIndex: number) => {
       if (!isEmpty(props.rowActionsButtons)) {
         return h(
-          "td",
-          props.rowActionsButtons.map((btn) => {
+          'td',
+          props.rowActionsButtons.map(btn => {
             const canShowBtn =
-              typeof btn.condition === "function" ? btn.condition(row) : true;
+              typeof btn.condition === 'function' ? btn.condition(row) : true;
             return canShowBtn
               ? renderRowActionButton(row, rowIndex, btn)
               : null;
@@ -672,19 +662,19 @@ export const DataTable = defineComponent({
         IonButton,
         {
           key: btn.icon,
-          size: btn.size ?? "small",
-          color: btn.color || "primary",
+          size: btn.size ?? 'small',
+          color: btn.color || 'primary',
           onClick: () => btn.action(row, rowIndex),
         },
-        btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || "Button"
+        btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || 'Button'
       );
     };
 
     const renderTable = () => {
       return h(
-        "div",
-        { class: "responsive-table ion-padding-horizontal" },
-        h("table", { class: "table bordered-table striped-table" }, [
+        'div',
+        { class: 'responsive-table ion-padding-horizontal' },
+        h('table', { class: 'table bordered-table striped-table' }, [
           renderTableHeader(),
           renderTableBody(),
         ])

@@ -29,9 +29,8 @@ export interface SortQueryInterface {
   order: sortType;
 }
 
-export type sortType = "asc" | "desc" | "none";
-export type ButtonSize = "small" | "large" | "default"
-
+export type sortType = 'asc' | 'desc' | 'none';
+export type ButtonSize = 'small' | 'large' | 'default';
 
 export interface PaginationInterface {
   enabled: boolean;
@@ -52,51 +51,66 @@ export interface TableFilterInterface {
 export interface ActionButtonInterface {
   label: string;
   icon?: string;
-  action: (activeRows: any[], allRows: any[], filters: TableFilterInterface, columns: TableColumnInterface[]) => any;
+  action: (
+    activeRows: any[],
+    allRows: any[],
+    filters: TableFilterInterface,
+    columns: TableColumnInterface[]
+  ) => any;
   color?: string;
-  size?: ButtonSize
+  size?: ButtonSize;
 }
 
 export interface RowActionButtonInterface {
   label?: string;
   icon?: string;
   action: (row: any, index: number) => any;
-  size?: ButtonSize
+  size?: ButtonSize;
   color?: string;
   default?: boolean;
   condition?: (row: any) => boolean;
 }
 
-export type TextFieldTypes = "text" | "number" | "date";
+export type TextFieldTypes = 'text' | 'number' | 'date';
 
 export interface CustomFilterInterface {
   id: string;
   label?: string;
   value?: any;
   gridSize?: number; // numbers between 1 and 12
-  type: TextFieldTypes | "select" | "dateRange"
+  type: TextFieldTypes | 'select' | 'dateRange';
   options?: Option[];
   placeholder?: string;
   required?: boolean;
   multiple?: boolean;
-  onUpdate?: (value: any) => any,
-  slotName?: string
+  onUpdate?: (value: any) => any;
+  slotName?: string;
 }
 
 export interface TableConfigInterface {
   showSubmitButton?: boolean;
   showSearchField?: boolean;
   showIndices?: boolean;
-  pagination?: Partial<PaginationInterface>
+  pagination?: Partial<PaginationInterface>;
 }
 
 export interface TableGlobalConfig {
-  color: "primary" | "secondary" | "tertiary" | "success" | "warning" | "danger" | "light" | "dark" | "medium" | "custom"
+  color:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'light'
+    | 'dark'
+    | 'medium'
+    | 'custom';
 }
 
 export interface PaginationButton {
   onClick?: () => void;
   icon?: string;
   label?: string | number;
-  disabled?: boolean
+  disabled?: boolean;
 }

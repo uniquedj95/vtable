@@ -1,12 +1,12 @@
 // @vitest-environment node
-import { test, expect, describe, it } from 'vitest';
+import { expect, describe, it } from 'vitest';
 import {
   get,
   isEmpty,
   orderBy,
   range,
   filterRows,
-  isDrillable
+  isDrillable,
 } from '../../src/lib/utils';
 
 // Tests for get function
@@ -38,7 +38,9 @@ describe('get', () => {
   });
 
   it('should handle complex paths', () => {
-    const obj = { data: { patients: [{ name: { first: 'John', last: 'Doe' } }] } };
+    const obj = {
+      data: { patients: [{ name: { first: 'John', last: 'Doe' } }] },
+    };
     expect(get(obj, 'data.patients[0].name.first')).toBe('John');
   });
 });
@@ -90,14 +92,20 @@ describe('orderBy', () => {
   });
 
   it('should sort arrays with single iteratee and order', () => {
-    const collection = [{ name: 'John', age: 30 }, { name: 'Jane', age: 25 }];
+    const collection = [
+      { name: 'John', age: 30 },
+      { name: 'Jane', age: 25 },
+    ];
     const result = orderBy(collection, [item => item.age], ['asc']);
     expect(result[0].name).toBe('Jane');
     expect(result[1].name).toBe('John');
   });
 
   it('should sort in descending order', () => {
-    const collection = [{ name: 'John', age: 30 }, { name: 'Jane', age: 25 }];
+    const collection = [
+      { name: 'John', age: 30 },
+      { name: 'Jane', age: 25 },
+    ];
     const result = orderBy(collection, [item => item.age], ['desc']);
     expect(result[0].name).toBe('John');
     expect(result[1].name).toBe('Jane');
@@ -107,7 +115,7 @@ describe('orderBy', () => {
     const collection = [
       { name: 'John', age: 30, role: 'admin' },
       { name: 'Jane', age: 25, role: 'admin' },
-      { name: 'Bob', age: 30, role: 'user' }
+      { name: 'Bob', age: 30, role: 'user' },
     ];
     const result = orderBy(
       collection,
@@ -149,7 +157,7 @@ describe('filterRows', () => {
   const rows = [
     { id: 1, name: 'John', email: 'john@example.com', roles: ['admin'] },
     { id: 2, name: 'Jane', email: 'jane@example.com', roles: ['user'] },
-    { id: 3, name: 'Bob', email: 'bob@example.com', roles: ['editor'] }
+    { id: 3, name: 'Bob', email: 'bob@example.com', roles: ['editor'] },
   ];
 
   it('should return all rows when query is empty', () => {
@@ -208,12 +216,12 @@ describe('isDrillable', () => {
     expect(isDrillable(column, 'value', {})).toBe(true);
   });
 
-  it('should call drillable function when it\'s a function', () => {
+  it("should call drillable function when it's a function", () => {
     const row = { id: 1 };
-    const column = { 
+    const column = {
       label: 'Test',
-      path: 'test', 
-      drillable: (value: any, rowData: any) => value === 'test' && rowData.id === 1 
+      path: 'test',
+      drillable: (value, rowData) => value === 'test' && rowData.id === 1,
     };
     expect(isDrillable(column, 'test', row)).toBe(true);
     expect(isDrillable(column, 'other', row)).toBe(false);

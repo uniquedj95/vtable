@@ -13,24 +13,20 @@ export default async function config(args) {
         sourcemap: true,
         entryFileNames: '[name].js',
       },
-      external: [
-        'vue',
-        '@ionic/vue',
-        'ionicons/icons'
-      ],
+      external: ['vue', '@ionic/vue', 'ionicons/icons'],
       plugins: [
         clear({
           targets: ['./dist'],
         }),
-        css({ output: "lib/datatable.css" }),
+        css({ output: 'lib/datatable.css' }),
         vue(),
         typescript({
           tsconfigOverride: {
             compilerOptions: {
               declaration: true,
             },
-            include: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-            exclude: ["**/*.css"]
+            include: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.vue'],
+            exclude: ['**/*.css'],
           },
         }),
       ],
@@ -43,22 +39,18 @@ export default async function config(args) {
         sourcemap: true,
         entryFileNames: '[name].mjs',
       },
-      external: [
-        'vue',
-        '@ionic/vue',
-        'ionicons/icons'
-      ],
+      external: ['vue', '@ionic/vue', 'ionicons/icons'],
       plugins: [
-        css({ output: "lib/datatable.css" }),
+        css({ output: 'lib/datatable.css' }),
         vue(),
         typescript({
           tsconfigOverride: {
             declaration: false,
-            include: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-            exclude: ["**/*.css"]
+            include: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.vue'],
+            exclude: ['**/*.css'],
           },
         }),
       ],
-    }
+    },
   ];
 }

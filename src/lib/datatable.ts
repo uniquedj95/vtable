@@ -481,6 +481,7 @@ export const DataTable = defineComponent({
           IonSelect,
           {
             value: filters.pagination.pageSize,
+            interface: 'popover',
             onIonChange: e =>
               handleFilters({
                 ...filters.pagination,

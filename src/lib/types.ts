@@ -20,8 +20,14 @@ export interface TableColumnInterface {
   formatter?: (value: any, row: any) => any;
   thStyles?: Record<string, string>;
   thClasses?: Array<string>;
-  tdStyles?: Record<string, string>;
-  tdClasses?: Array<string>;
+  tdStyles?:
+    | Record<string, string>
+    | ((value: any, row: any) => Record<string, string>);
+  tdClasses?: Array<string> | ((value: any, row: any) => Array<string>);
+  customRenderer?: (value: any, row: any, column: TableColumnInterface) => any;
+  slotName?: string;
+  component?: any; // Vue component to render
+  componentProps?: (value: any, row: any) => Record<string, any>;
 }
 
 export interface SortQueryInterface {

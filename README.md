@@ -6,7 +6,25 @@ An advanced data table component for the Ionic Vue framework, offering powerful 
   <a href="https://sonarcloud.io/summary/new_code?id=uniquedj95_vtable"><img src="https://sonarcloud.io/api/project_badges/measure?project=uniquedj95_vtable&metric=alert_status" /></a>
   <a href="https://ionicframework.com/"><img src="https://badgen.net/badge/Ionic/5.x/blue" alt="Ionic"></a>
   <a href="https://vuejs.org/"><img src="https://badgen.net/badge/Vue/3.x/cyan" alt="Vue"></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://badgen.net/badge/Typescript/4.x/yellow" alt="TS"></a>
+  <a href="https://www.typescript### HTML Content Formatting
+
+````vue
+<script setup lang="ts">
+const columns = ref([
+  {
+    label: 'Description',
+    path: 'description',
+    formatter: (value) => {
+      // HTML content is automatically detected, sanitized, and rendered safely
+      return value.replace(
+        /(urgent|important|critical)/gi,
+        '<span style="background: yellow; font-weight: bold;">$1</span>'
+      );
+    }
+  }
+]);
+</script>
+```="https://badgen.net/badge/Typescript/4.x/yellow" alt="TS"></a>
   <a href="https://www.npmjs.com/package/@uniquedj95/vtable"><img src="https://img.shields.io/npm/dm/@uniquedj95/vtable.svg" alt="Downloads"></a>
 </p>
 
@@ -22,7 +40,7 @@ Install via npm or yarn:
 npm install @uniquedj95/vtable
 # OR
 yarn add @uniquedj95/vtable
-```
+````
 
 ---
 
@@ -96,26 +114,26 @@ router.isReady().then(() => {
 
 A table column is defined with the following properties:
 
-| Property Name     | Required | Description                                                                 |
-| ----------------- | -------- | --------------------------------------------------------------------------- |
-| label             | Yes      | The column heading text (e.g. `First Name`)                                 |
-| path              | Yes      | The key used to map row data to this column (e.g. `first_name`)             |
-| exportable        | No       | If true, values in this column can be exported (default: `true`)            |
-| initialSort       | No       | If true, this column is used for initial sorting (default: `false`)         |
-| sortable          | No       | If true, this column can be sorted (default: `true`)                        |
-| initialSortOrder  | No       | Initial sort order: `"asc"`, `"desc"`, or `"none"` (requires `initialSort`) |
-| sortCaseSensitive | No       | If true, sorting is case sensitive (default: `false`)                       |
-| drillable         | No       | If true, column data can be drilled (default: `false`)                      |
-| preSort           | No       | Function to process values before sorting                                   |
-| formatter         | No       | Function to format values for display (HTML content auto-detected)          |
-| thStyles          | No       | CSS styles for table header cell                                            |
-| thClasses         | No       | CSS classes for table header cell                                           |
-| tdStyles          | No       | CSS styles for table data cells (can be function for dynamic styles)        |
-| tdClasses         | No       | CSS classes for table data cells (can be function for dynamic classes)      |
-| customRenderer    | No       | Function to completely customize cell content rendering                     |
-| slotName          | No       | Name of Vue slot to use for custom cell content                             |
-| component         | No       | Vue component to render in the cell                                         |
-| componentProps    | No       | Function returning props for the Vue component                              |
+| Property Name     | Required | Description                                                                    |
+| ----------------- | -------- | ------------------------------------------------------------------------------ |
+| label             | Yes      | The column heading text (e.g. `First Name`)                                    |
+| path              | Yes      | The key used to map row data to this column (e.g. `first_name`)                |
+| exportable        | No       | If true, values in this column can be exported (default: `true`)               |
+| initialSort       | No       | If true, this column is used for initial sorting (default: `false`)            |
+| sortable          | No       | If true, this column can be sorted (default: `true`)                           |
+| initialSortOrder  | No       | Initial sort order: `"asc"`, `"desc"`, or `"none"` (requires `initialSort`)    |
+| sortCaseSensitive | No       | If true, sorting is case sensitive (default: `false`)                          |
+| drillable         | No       | If true, column data can be drilled (default: `false`)                         |
+| preSort           | No       | Function to process values before sorting                                      |
+| formatter         | No       | Function to format values for display (HTML content auto-detected & sanitized) |
+| thStyles          | No       | CSS styles for table header cell                                               |
+| thClasses         | No       | CSS classes for table header cell                                              |
+| tdStyles          | No       | CSS styles for table data cells (can be function for dynamic styles)           |
+| tdClasses         | No       | CSS classes for table data cells (can be function for dynamic classes)         |
+| customRenderer    | No       | Function to completely customize cell content rendering                        |
+| slotName          | No       | Name of Vue slot to use for custom cell content                                |
+| component         | No       | Vue component to render in the cell                                            |
+| componentProps    | No       | Function returning props for the Vue component                                 |
 
 ##### 1.1.1 Advanced Column Formatting
 
@@ -201,19 +219,23 @@ import { renderStatus, renderChipList, renderProgress } from '@uniquedj95/vtable
 
 **HTML Content (Auto-detected):**
 
+````typescript
+**HTML Content (Auto-detected & Sanitized):**
 ```typescript
 {
   label: 'Description',
   path: 'description',
   formatter: (value) => {
-    // HTML content is automatically detected and rendered
+    // HTML content is automatically detected, sanitized, and rendered safely
     return value.replace(
       /(important|urgent)/gi,
       '<strong style="color: red;">$1</strong>'
     );
   }
 }
-```
+````
+
+````
 
 **Vue Components:**
 
@@ -226,7 +248,7 @@ import CustomRating from './CustomRating.vue';
   component: CustomRating,
   componentProps: (value, row) => ({ rating: value, maxStars: 5 })
 }
-```
+````
 
 #### 1.2 Action Button
 
@@ -355,6 +377,10 @@ import {
 - `trueConfig/falseConfig`: `{ color, label }`
 
 **`renderHtml(htmlContent)`**
+
+- Safely renders HTML content with automatic sanitization
+- Removes dangerous elements (script, iframe, etc.) and event handlers
+- Use only with trusted or validated content
 
 - Safely renders HTML content
 

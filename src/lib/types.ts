@@ -120,3 +120,26 @@ export interface PaginationButton {
   label?: string | number;
   disabled?: boolean;
 }
+
+/**
+ * Cell component configuration interfaces
+ */
+
+export interface ChipConfig {
+  color?: string;
+  outline?: boolean;
+  size?: 'small' | 'default' | 'large';
+}
+
+export interface BadgeConfig {
+  color?: string;
+  size?: 'small' | 'default' | 'large';
+}
+
+export interface StatusConfig {
+  [key: string]: {
+    color: string;
+    label?: string;
+    outline?: boolean;
+  };
+}

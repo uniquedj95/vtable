@@ -2,7 +2,12 @@ import {
   PaginationInterface,
   SortQueryInterface,
   TableColumnInterface,
+  ChipConfig,
+  BadgeConfig,
+  StatusConfig,
 } from './types';
+import { h } from 'vue';
+import { IonBadge, IonChip, IonLabel } from '@ionic/vue';
 
 /**
  * Safely gets the value at path of object.
@@ -306,3 +311,208 @@ export function range(start: number, end: number): number[] {
   }
   return result;
 }
+
+/**
+ * Detects if a string contains HTML content.
+ *
+ * @param str - The string to check for HTML content.
+ * @returns True if the string contains HTML tags, false otherwise.
+ */
+export function isHtmlString(str: any): boolean {
+  if (typeof str !== 'string') return false;
+
+  // More robust pattern to match valid HTML tags
+  const htmlPattern = /<\/?[a-z][\s\S]*>/i;
+  return htmlPattern.test(str);
+}
+
+/**
+ * Sanitizes HTML content by removing dangerous elements and attributes.
+ * This helps prevent XSS attacks while preserving safe formatting.
+ *
+ * @param html - The HTML string to sanitize.
+ * @returns The sanitized HTML string.
+ */
+export function sanitizeHtml(html: string): string {
+  // Create a temporary div to parse HTML
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+
+  // Remove potentially dangerous elements and attributes
+  const dangerousElements = ['script', 'iframe', 'object', 'embed', 'form'];
+  const dangerousAttributes = [
+    'onload',
+    'onerror',
+    'onclick',
+    'onmouseover',
+    'onfocus',
+    'onblur',
+  ];
+
+  // Remove dangerous elements
+  dangerousElements.forEach(tagName => {
+    const elements = temp.querySelectorAll(tagName);
+    elements.forEach(el => el.remove());
+  });
+
+  // Remove dangerous attributes from all elements
+  const allElements = temp.querySelectorAll('*');
+  allElements.forEach(el => {
+    dangerousAttributes.forEach(attr => {
+      if (el.hasAttribute(attr)) {
+        el.removeAttribute(attr);
+      }
+    });
+
+    // Remove any attribute that starts with 'on' (event handlers)
+    Array.from(el.attributes).forEach(attr => {
+      if (attr.name.toLowerCase().startsWith('on')) {
+        el.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return temp.innerHTML;
+}
+
+/**
+ * Renders a value as a chip component
+ */
+export const renderChip = (
+  value: any,
+  config: ChipConfig = {},
+  onClick?: () => void
+) => {
+  return h(
+    IonChip,
+    {
+      color: config.color || 'primary',
+      outline: config.outline || false,
+      onClick,
+    },
+    [h(IonLabel, value)]
+  );
+};
+
+/**
+ * Renders a value as a badge component
+ */
+export const renderBadge = (value: any, config: BadgeConfig = {}) => {
+  return h(
+    IonBadge,
+    {
+      color: config.color || 'primary',
+      size: config.size || 'default',
+    },
+    value
+  );
+};
+
+/**
+ * Renders status values with predefined colors and styles
+ */
+export const renderStatus = (
+  value: any,
+  statusConfig: StatusConfig,
+  defaultConfig: ChipConfig = {}
+) => {
+  const config = statusConfig[value] || defaultConfig;
+  return renderChip(config.label || value, {
+    color: config.color,
+    outline: config.outline,
+  });
+};
+
+/**
+ * Renders a list of values as chips
+ */
+export const renderChipList = (
+  values: any[],
+  config: ChipConfig = {},
+  maxVisible: number = 3
+) => {
+  if (!Array.isArray(values)) return values;
+
+  const visibleValues = values.slice(0, maxVisible);
+  const remainingCount = values.length - maxVisible;
+
+  const chips = visibleValues.map((value, _index) => renderChip(value, config));
+
+  if (remainingCount > 0) {
+    chips.push(
+      renderChip(`+${remainingCount}`, {
+        ...config,
+        color: 'medium',
+        outline: true,
+      })
+    );
+  }
+
+  return h(
+    'div',
+    { style: 'display: flex; flex-wrap: wrap; gap: 4px;' },
+    chips
+  );
+};
+
+/**
+ * Renders HTML content safely with sanitization
+ * Note: Only use with trusted content or content that has been validated
+ */
+export const renderHtml = (htmlContent: string) => {
+  const sanitizedContent = sanitizeHtml(htmlContent);
+  return h('div', {
+    innerHTML: sanitizedContent,
+  });
+};
+
+/**
+ * Renders a progress bar
+ */
+export const renderProgress = (
+  value: number,
+  max: number = 100,
+  color: string = 'primary'
+) => {
+  const percentage = Math.min((value / max) * 100, 100);
+  return h(
+    'div',
+    {
+      style: {
+        width: '100%',
+        height: '8px',
+        backgroundColor: '#e0e0e0',
+        borderRadius: '4px',
+        overflow: 'hidden',
+      },
+    },
+    [
+      h('div', {
+        style: {
+          width: `${percentage}%`,
+          height: '100%',
+          backgroundColor: `var(--ion-color-${color})`,
+          transition: 'width 0.3s ease',
+        },
+      }),
+    ]
+  );
+};
+
+/**
+ * Renders a boolean value as a colored indicator
+ */
+export const renderBoolean = (
+  value: boolean,
+  trueConfig: { color: string; label: string } = {
+    color: 'success',
+    label: 'Yes',
+  },
+  falseConfig: { color: string; label: string } = {
+    color: 'danger',
+    label: 'No',
+  }
+) => {
+  const config = value ? trueConfig : falseConfig;
+  return renderBadge(config.label, { color: config.color });
+};

@@ -45,7 +45,7 @@ import {
 import { SelectInput } from './select';
 import { DateRangePicker } from './date-picker';
 import * as DT from './utils';
-import { get, isEmpty, range } from './utils';
+import { get, isEmpty, range, isHtmlString, sanitizeHtml } from './utils';
 
 export const DataTable = defineComponent({
   name: 'DataTable',
@@ -663,18 +663,14 @@ export const DataTable = defineComponent({
         value = column.formatter(value, row);
       }
 
-      // Auto-detect HTML content from formatted value
-      const isHtmlContent = isHtmlString(value);
-
       // Handle drillable content
       if (DT.isDrillable(column, value, row)) {
-        const content = isHtmlContent
-          ? h('span', { innerHTML: renderCellValue(value) })
-          : renderCellValue(value);
+        const content = renderSafeContent(value);
         return h(
           'a',
           {
             onClick: (e: Event) => {
+              e.preventDefault();
               e.stopPropagation();
               emit('drilldown', { column, row });
             },
@@ -682,21 +678,18 @@ export const DataTable = defineComponent({
           content
         );
       } else {
-        // Render HTML content if detected
-        if (isHtmlContent && typeof value === 'string') {
-          return h('span', { innerHTML: value });
-        }
-        return renderCellValue(value);
+        // Render content (HTML or plain text)
+        return renderSafeContent(value);
       }
     };
 
-    // Helper function to detect HTML content
-    const isHtmlString = (str: any): boolean => {
-      if (typeof str !== 'string') return false;
-
-      // Check for common HTML patterns
-      const htmlPattern = /<[^>]*>/;
-      return htmlPattern.test(str);
+    // Helper function to render content (HTML or plain text)
+    const renderSafeContent = (value: any): any => {
+      if (isHtmlString(value) && typeof value === 'string') {
+        const sanitizedHtml = sanitizeHtml(value);
+        return h('span', { innerHTML: sanitizedHtml });
+      }
+      return renderCellValue(value);
     };
 
     const renderCellValue = (value: Array<any> | string | number) => {

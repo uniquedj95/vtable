@@ -96,18 +96,137 @@ router.isReady().then(() => {
 
 A table column is defined with the following properties:
 
-| Property Name     | Required | Description                                                         |
-| ----------------- | -------- | ------------------------------------------------------------------- | ------ | ------------------------------ |
-| label             | Yes      | The column heading text (e.g. `First Name`)                         |
-| path              | Yes      | The key used to map row data to this column (e.g. `first_name`)     |
-| exportable        | No       | If true, values in this column can be exported (default: `true`)    |
-| initialSort       | No       | If true, this column is used for initial sorting (default: `false`) |
-| sortable          | No       | If true, this column can be sorted (default: `true`)                |
-| initialSortOrder  | No       | Initial sort order: `"asc"                                          | "desc" | "none"`(requires`initialSort`) |
-| sortCaseSensitive | No       | If true, sorting is case sensitive (default: `false`)               |
-| drillable         | No       | If true, column data can be drilled (default: `false`)              |
-| preSort           | No       | Function to process values before sorting                           |
-| formatter         | No       | Function to format values for display                               |
+| Property Name     | Required | Description                                                                 |
+| ----------------- | -------- | --------------------------------------------------------------------------- |
+| label             | Yes      | The column heading text (e.g. `First Name`)                                 |
+| path              | Yes      | The key used to map row data to this column (e.g. `first_name`)             |
+| exportable        | No       | If true, values in this column can be exported (default: `true`)            |
+| initialSort       | No       | If true, this column is used for initial sorting (default: `false`)         |
+| sortable          | No       | If true, this column can be sorted (default: `true`)                        |
+| initialSortOrder  | No       | Initial sort order: `"asc"`, `"desc"`, or `"none"` (requires `initialSort`) |
+| sortCaseSensitive | No       | If true, sorting is case sensitive (default: `false`)                       |
+| drillable         | No       | If true, column data can be drilled (default: `false`)                      |
+| preSort           | No       | Function to process values before sorting                                   |
+| formatter         | No       | Function to format values for display (HTML content auto-detected)          |
+| thStyles          | No       | CSS styles for table header cell                                            |
+| thClasses         | No       | CSS classes for table header cell                                           |
+| tdStyles          | No       | CSS styles for table data cells (can be function for dynamic styles)        |
+| tdClasses         | No       | CSS classes for table data cells (can be function for dynamic classes)      |
+| customRenderer    | No       | Function to completely customize cell content rendering                     |
+| slotName          | No       | Name of Vue slot to use for custom cell content                             |
+| component         | No       | Vue component to render in the cell                                         |
+| componentProps    | No       | Function returning props for the Vue component                              |
+
+##### 1.1.1 Advanced Column Formatting
+
+vtable provides multiple ways to format and style column data, giving you complete control over presentation:
+
+**Dynamic Styles and Classes:**
+
+```typescript
+{
+  label: 'Score',
+  path: 'score',
+  tdStyles: (value, row) => ({
+    color: value >= 80 ? 'green' : value >= 60 ? 'orange' : 'red',
+    fontWeight: 'bold'
+  }),
+  tdClasses: (value, row) => [
+    'score-cell',
+    value >= 80 ? 'high-score' : 'low-score'
+  ]
+}
+```
+
+**Custom Renderers:**
+
+```typescript
+import { renderStatus, renderChipList, renderProgress } from '@uniquedj95/vtable';
+
+// Status with colored chips
+{
+  label: 'Status',
+  path: 'status',
+  customRenderer: (value, row, column) => {
+    const statusConfig = {
+      active: { color: 'success', label: 'Active' },
+      inactive: { color: 'danger', label: 'Inactive' },
+      pending: { color: 'warning', label: 'Pending' }
+    };
+    return renderStatus(value, statusConfig);
+  }
+}
+
+// Progress bar
+{
+  label: 'Progress',
+  path: 'progress',
+  customRenderer: (value) => {
+    const color = value >= 80 ? 'success' : value >= 50 ? 'warning' : 'danger';
+    return renderProgress(value, 100, color);
+  }
+}
+
+// Multiple tags as chips
+{
+  label: 'Tags',
+  path: 'tags',
+  customRenderer: (value) => {
+    return renderChipList(value, { color: 'primary', outline: true }, 3);
+  }
+}
+```
+
+**Vue Slots:**
+
+```typescript
+// Column definition
+{
+  label: 'Actions',
+  path: 'id',
+  slotName: 'actions',
+  sortable: false
+}
+```
+
+```vue
+<!-- Template usage -->
+<DataTable :columns="columns" :rows="rows">
+  <template #actions="{ value, row, column }">
+    <IonButton @click="editRow(row)" size="small">Edit</IonButton>
+    <IonButton @click="deleteRow(row)" size="small" color="danger">Delete</IonButton>
+  </template>
+</DataTable>
+```
+
+**HTML Content (Auto-detected):**
+
+```typescript
+{
+  label: 'Description',
+  path: 'description',
+  formatter: (value) => {
+    // HTML content is automatically detected and rendered
+    return value.replace(
+      /(important|urgent)/gi,
+      '<strong style="color: red;">$1</strong>'
+    );
+  }
+}
+```
+
+**Vue Components:**
+
+```typescript
+import CustomRating from './CustomRating.vue';
+
+{
+  label: 'Rating',
+  path: 'rating',
+  component: CustomRating,
+  componentProps: (value, row) => ({ rating: value, maxStars: 5 })
+}
+```
 
 #### 1.2 Action Button
 
@@ -185,6 +304,62 @@ The data table emits the following events:
 
 ---
 
+### 3. Pre-built Cell Components
+
+vtable includes ready-to-use cell formatting components accessible via the utils export:
+
+```typescript
+import {
+  renderStatus,
+  renderChip,
+  renderBadge,
+  renderChipList,
+  renderProgress,
+  renderBoolean,
+  renderHtml,
+} from '@uniquedj95/vtable';
+```
+
+#### 3.1 Available Components
+
+**`renderStatus(value, statusConfig, defaultConfig?)`**
+
+- Renders status values with predefined colors and styles
+- `statusConfig`: Object mapping status values to `{ color, label?, outline? }`
+
+**`renderChip(value, config?, onClick?)`**
+
+- Renders a single chip component
+- `config`: `{ color?, outline?, size? }`
+
+**`renderBadge(value, config?)`**
+
+- Renders a badge component
+- `config`: `{ color?, size? }`
+
+**`renderChipList(values, config?, maxVisible?)`**
+
+- Renders an array of values as chips with overflow handling
+- Shows a "+X" chip when there are more items than `maxVisible`
+
+**`renderProgress(value, max?, color?)`**
+
+- Renders a progress bar
+- `value`: Current progress value
+- `max`: Maximum value (default: 100)
+- `color`: Ionic color (default: 'primary')
+
+**`renderBoolean(value, trueConfig?, falseConfig?)`**
+
+- Renders boolean values as colored badges
+- `trueConfig/falseConfig`: `{ color, label }`
+
+**`renderHtml(htmlContent)`**
+
+- Safely renders HTML content
+
+---
+
 ## Examples
 
 ### Basic Usage
@@ -207,6 +382,256 @@ const columns = ref([
   { label: 'Name', path: 'name' },
   { label: 'Age', path: 'age', sortable: true },
 ]);
+</script>
+```
+
+### Advanced Column Formatting
+
+```vue
+<template>
+  <data-table :rows="users" :columns="columns">
+    <!-- Custom slot for actions -->
+    <template #actions="{ row }">
+      <IonButton @click="editUser(row)" size="small">Edit</IonButton>
+      <IonButton @click="deleteUser(row)" size="small" color="danger"
+        >Delete</IonButton
+      >
+    </template>
+  </data-table>
+</template>
+
+<script setup lang="ts">
+import { ref, h } from 'vue';
+import {
+  DataTable,
+  renderStatus,
+  renderChipList,
+  renderBoolean,
+  renderProgress,
+} from '@uniquedj95/vtable';
+
+const users = ref([
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    status: 'active',
+    score: 85,
+    tags: ['developer', 'senior', 'javascript'],
+    isActive: true,
+    progress: 75,
+    priority: 'high',
+  },
+  // ... more users
+]);
+
+const columns = ref([
+  // Dynamic styling based on data
+  {
+    label: 'Name',
+    path: 'name',
+    tdStyles: (value, row) => ({
+      fontWeight: row.isActive ? 'bold' : 'normal',
+      color: row.isActive ? '#000' : '#666',
+    }),
+  },
+
+  // Status with colored chips
+  {
+    label: 'Status',
+    path: 'status',
+    customRenderer: value => {
+      const statusConfig = {
+        active: { color: 'success', label: 'Active' },
+        inactive: { color: 'danger', label: 'Inactive' },
+        pending: { color: 'warning', label: 'Pending' },
+      };
+      return renderStatus(value, statusConfig);
+    },
+  },
+
+  // Score with conditional classes
+  {
+    label: 'Score',
+    path: 'score',
+    tdClasses: value => [
+      'score-cell',
+      value >= 80 ? 'high-score' : value >= 60 ? 'medium-score' : 'low-score',
+    ],
+    tdStyles: value => ({
+      color: value >= 80 ? 'green' : value >= 60 ? 'orange' : 'red',
+      fontWeight: 'bold',
+    }),
+  },
+
+  // Tags as chip list
+  {
+    label: 'Tags',
+    path: 'tags',
+    customRenderer: value => {
+      return renderChipList(value, { color: 'primary', outline: true }, 2);
+    },
+  },
+
+  // Progress bar
+  {
+    label: 'Progress',
+    path: 'progress',
+    customRenderer: value => {
+      const color =
+        value >= 80 ? 'success' : value >= 50 ? 'warning' : 'danger';
+      return h('div', [
+        renderProgress(value, 100, color),
+        h(
+          'small',
+          {
+            style: 'display: block; text-align: center; margin-top: 4px;',
+          },
+          `${value}%`
+        ),
+      ]);
+    },
+  },
+
+  // Boolean as badge
+  {
+    label: 'Active',
+    path: 'isActive',
+    customRenderer: value => {
+      return renderBoolean(
+        value,
+        { color: 'success', label: 'Yes' },
+        { color: 'danger', label: 'No' }
+      );
+    },
+  },
+
+  // Priority with conditional background
+  {
+    label: 'Priority',
+    path: 'priority',
+    tdStyles: value => {
+      const baseStyle = {
+        padding: '6px 12px',
+        borderRadius: '4px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: 'white',
+      };
+
+      switch (value) {
+        case 'high':
+          return { ...baseStyle, backgroundColor: '#e74c3c' };
+        case 'medium':
+          return { ...baseStyle, backgroundColor: '#f39c12' };
+        case 'low':
+          return { ...baseStyle, backgroundColor: '#27ae60' };
+        default:
+          return { ...baseStyle, backgroundColor: '#95a5a6' };
+      }
+    },
+  },
+
+  // Actions using slot
+  {
+    label: 'Actions',
+    path: 'id',
+    slotName: 'actions',
+    sortable: false,
+  },
+]);
+
+const editUser = user => {
+  console.log('Edit user:', user);
+};
+
+const deleteUser = user => {
+  console.log('Delete user:', user);
+};
+</script>
+
+<style scoped>
+.score-cell {
+  text-align: center;
+}
+
+.high-score {
+  background-color: #d4edda;
+}
+
+.medium-score {
+  background-color: #fff3cd;
+}
+
+.low-score {
+  background-color: #f8d7da;
+}
+</style>
+```
+
+### HTML Content Formatting
+
+```vue
+<script setup lang="ts">
+const columns = ref([
+  {
+    label: 'Description',
+    path: 'description',
+    formatter: value => {
+      // HTML content is automatically detected and rendered
+      return value.replace(
+        /(urgent|important|critical)/gi,
+        '<span style="background: yellow; font-weight: bold;">$1</span>'
+      );
+    },
+  },
+]);
+</script>
+```
+
+### Date Formatting with Relative Time
+
+```vue
+<script setup lang="ts">
+const dateColumn = {
+  label: 'Created',
+  path: 'createdAt',
+  formatter: value => {
+    const date = new Date(value);
+    return {
+      formatted: date.toLocaleDateString(),
+      relative: getRelativeTime(date),
+      iso: date.toISOString(),
+    };
+  },
+  customRenderer: value => {
+    if (typeof value === 'object' && value.formatted) {
+      return h('div', [
+        h('div', { style: 'font-weight: 500;' }, value.formatted),
+        h(
+          'div',
+          {
+            style: 'font-size: 12px; color: #666;',
+            title: value.iso,
+          },
+          value.relative
+        ),
+      ]);
+    }
+    return value;
+  },
+};
+
+function getRelativeTime(date) {
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) return 'Today';
+  if (diffInDays === 1) return 'Yesterday';
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  return `${Math.floor(diffInDays / 7)} weeks ago`;
+}
 </script>
 ```
 

@@ -293,10 +293,10 @@ export function isDrillable(
 }
 
 /**
- * Creates an array of numbers progressing from start up to, but not including, end.
+ * Creates an array of numbers within a specified range.
  *
- * @param start - The start of the range.
- * @param end - The end of the range.
+ * @param start - The start number.
+ * @param end - The end number (exclusive).
  * @returns An array of numbers.
  */
 export function range(start: number, end: number): number[] {

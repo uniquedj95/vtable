@@ -610,10 +610,22 @@ export const DataTable = defineComponent({
 
     const renderDataRowCells = (row: any) => {
       return tableColumns.value.map((column, key) => {
-        const classes = ['data-cell', ...(column.tdClasses ?? [])].join(' ');
+        // Dynamic classes based on column configuration
+        const dynamicClasses =
+          typeof column.tdClasses === 'function'
+            ? column.tdClasses(get(row, column.path), row)
+            : (column.tdClasses ?? []);
+        const classes = ['data-cell', ...dynamicClasses].join(' ');
+
+        // Dynamic styles based on column configuration
+        const dynamicStyles =
+          typeof column.tdStyles === 'function'
+            ? column.tdStyles(get(row, column.path), row)
+            : column.tdStyles;
+
         return h(
           'td',
-          { key, class: classes, style: column.tdStyles },
+          { key, class: classes, style: dynamicStyles },
           renderCellContent(row, column)
         );
       });
@@ -621,17 +633,70 @@ export const DataTable = defineComponent({
 
     const renderCellContent = (row: any, column: TableColumnInterface) => {
       let value = get(row, column.path);
-      if (typeof column.formatter === 'function' && value)
+
+      // Check if there's a slot for this column
+      if (column.slotName && slots[column.slotName]) {
+        const slotFn = slots[column.slotName];
+        return slotFn && slotFn({ value, row, column });
+      }
+
+      // Check if there's a custom renderer
+      if (typeof column.customRenderer === 'function') {
+        return column.customRenderer(value, row, column);
+      }
+
+      // Check if there's a Vue component to render
+      if (column.component) {
+        const props =
+          typeof column.componentProps === 'function'
+            ? column.componentProps(value, row)
+            : { value, row, column };
+        return h(column.component, props);
+      }
+
+      // Apply formatter if provided
+      if (
+        typeof column.formatter === 'function' &&
+        value !== null &&
+        value !== undefined
+      ) {
         value = column.formatter(value, row);
+      }
+
+      // Auto-detect HTML content from formatted value
+      const isHtmlContent = isHtmlString(value);
+
+      // Handle drillable content
       if (DT.isDrillable(column, value, row)) {
+        const content = isHtmlContent
+          ? h('span', { innerHTML: renderCellValue(value) })
+          : renderCellValue(value);
         return h(
           'a',
-          { onClick: () => emit('drilldown', { column, row }) },
-          renderCellValue(value)
+          {
+            onClick: (e: Event) => {
+              e.stopPropagation();
+              emit('drilldown', { column, row });
+            },
+          },
+          content
         );
       } else {
+        // Render HTML content if detected
+        if (isHtmlContent && typeof value === 'string') {
+          return h('span', { innerHTML: value });
+        }
         return renderCellValue(value);
       }
+    };
+
+    // Helper function to detect HTML content
+    const isHtmlString = (str: any): boolean => {
+      if (typeof str !== 'string') return false;
+
+      // Check for common HTML patterns
+      const htmlPattern = /<[^>]*>/;
+      return htmlPattern.test(str);
     };
 
     const renderCellValue = (value: Array<any> | string | number) => {

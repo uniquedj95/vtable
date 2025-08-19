@@ -341,9 +341,9 @@ export const DataTable = defineComponent({
       return (
         showFilterSection.value &&
         h(IonGrid, { style: { width: '100%', fontWeight: 500 } }, () =>
-          h(IonRow, [
+          h(IonRow, () => [
             h(IonCol, { size: '7' }, () =>
-              h(IonRow, [
+              h(IonRow, () => [
                 renderSearchbar(),
                 ...renderCustomFilters(),
                 renderSubmitButton(),
@@ -725,7 +725,7 @@ export const DataTable = defineComponent({
           color: btn.color || 'primary',
           onClick: () => btn.action(row, rowIndex),
         },
-        btn.icon ? h(IonIcon, { icon: btn.icon }) : btn.label || 'Button'
+        btn.icon ? () => h(IonIcon, { icon: btn.icon }) : btn.label || 'Button'
       );
     };
 
